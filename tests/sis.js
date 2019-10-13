@@ -35,8 +35,9 @@ async function testPerformValidCommitment() {
   const x = new mcl.Fr();
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
-  const serializedA = A.serializeToHexStr();
-  const serializedX = X.serializeToHexStr();
+
+  const serializedA = A.getStr(10).slice(2);
+  const serializedX = X.getStr(10).slice(2);
 
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",
@@ -47,7 +48,9 @@ async function testPerformValidCommitment() {
   })
 
   const serializedC = initResponseData.payload.c;
-  const c = mcl.deserializeHexStrToFr(serializedC);
+  const c = new mcl.Fr();
+  c.setStr(serializedC);
+
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
 
@@ -55,7 +58,7 @@ async function testPerformValidCommitment() {
     "protocol_name": "sis",
     "session_token": initResponseData.session_token,
     "payload": {
-      "s": s.serializeToHexStr(),
+      "s": s.getStr(10),
     }
   });
 
@@ -75,8 +78,8 @@ async function testPerformInvalidCommitment() {
   const x = new mcl.Fr();
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
-  const serializedA = A.serializeToHexStr();
-  const serializedX = X.serializeToHexStr();
+  const serializedA = A.getStr(10).slice(2);
+  const serializedX = X.getStr(10).slice(2);
 
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",
@@ -122,7 +125,7 @@ async function testInitInvalidA() {
   const x = new mcl.Fr();
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
-  const serializedX = X.serializeToHexStr();
+  const serializedX = X.getStr(10).slice(2);
 
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",
@@ -144,7 +147,7 @@ async function testInitInvalidX() {
   const a = new mcl.Fr();
   a.setByCSPRNG();
   const A = mcl.mul(G1, a);
-  const serializedA = A.serializeToHexStr();
+  const serializedA = A.getStr(10).slice(2);
 
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",
@@ -185,8 +188,8 @@ async function testVerifyInvalidS() {
   const x = new mcl.Fr();
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
-  const serializedA = A.serializeToHexStr();
-  const serializedX = X.serializeToHexStr();
+  const serializedA = A.getStr(10).slice(2);
+  const serializedX = X.getStr(10).slice(2);
 
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",

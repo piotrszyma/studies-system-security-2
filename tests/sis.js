@@ -146,7 +146,6 @@ async function testInitInvalidX() {
   const A = mcl.mul(G1, a);
   const serializedA = A.serializeToHexStr();
 
-
   const initResponseData = await performInitRequest({
     "protocol_name": "sis",
     "payload": {
@@ -160,13 +159,81 @@ async function testInitInvalidX() {
   }
 }
 
+async function testInitInvalidProtocolName() {
+
+  const initResponseData = await performInitRequest({
+    "protocol_name": "non sis",
+    "payload": {
+      "A": 'foo',
+      "X": 'bar',
+    }
+  })
+
+  if (initResponseData.message !== "This endpoint accepts only 'sis' protocol.") {
+    throw "testInitInvalidProtocolName failed"
+  }
+}
+
+async function testVerifyInvalidS() {
+
+  await mcl.init(mcl.BLS12_381);
+  const G1 = new mcl.G1();
+  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+  const a = new mcl.Fr();
+  a.setByCSPRNG();
+  const A = mcl.mul(G1, a);
+  const x = new mcl.Fr();
+  x.setByCSPRNG();
+  const X = mcl.mul(G1, x);
+  const serializedA = A.serializeToHexStr();
+  const serializedX = X.serializeToHexStr();
+
+  const initResponseData = await performInitRequest({
+    "protocol_name": "sis",
+    "payload": {
+      "A": serializedA,
+      "X": serializedX,
+    }
+  })
+
+  const verifyResponseData = await performVerifyRequest({
+    "protocol_name": "sis",
+    "session_token": initResponseData.session_token,
+    "payload": {
+      "s": 'invalid s',
+    }
+  });
+  if (verifyResponseData.message !== 'Invalid serialized s.') {
+    throw "testVerifyInvalidS failed"
+  }
+}
+
+async function testVerifyInvalidProtocolName() {
+  const verifyResponseData = await performVerifyRequest({
+    "protocol_name": "not sis",
+    "session_token": 'foo',
+    "payload": {
+      "s": 'foo',
+    }
+  });
+  if (verifyResponseData.message !== "This endpoint accepts only 'sis' protocol.") {
+    throw "testVerifyInvalidProtocolName failed"
+  }
+}
+
 
 async function main() {
   await testPerformInvalidCommitment();
   await testPerformValidCommitment();
-  await testVerifyInvalidSessionToken();
+
   await testInitInvalidA();
   await testInitInvalidX();
+  await testInitInvalidProtocolName();
+
+  await testVerifyInvalidSessionToken();
+  await testVerifyInvalidS();
+  await testVerifyInvalidProtocolName();
+
 }
 
 main();

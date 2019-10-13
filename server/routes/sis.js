@@ -17,10 +17,9 @@ router.post('/init', async (req, res, next) => {
   } = req.body;
 
   if (procotolName !== 'sis') {
-    res.status(403).send("This endpoint accepts only 'sis' protocol.");
+    res.status(403).send({ message: "This endpoint accepts only 'sis' protocol." });
     return;
   }
-
 
   const X = new mcl.G1();
   const A = new mcl.G1();
@@ -67,7 +66,7 @@ router.post('/verify', async (req, res) => {
   } = req.body;
 
   if (procotolName !== 'sis') {
-    res.status(403).send("This endpoint accepts only 'sis' protocol.");
+    res.status(403).send({ message: "This endpoint accepts only 'sis' protocol." });
     return;
   }
 

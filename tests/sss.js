@@ -10,7 +10,7 @@ const CONST_G1 = {
 function getHash(value) {
   const hasher = crypto.createHash('sha3-256');
   hasher.update(value);
-  return hasher.getHash();
+  return '0x' + hasher.digest('hex');
 }
 
 async function testVerifiesValidMessage() {
@@ -24,22 +24,19 @@ async function testVerifiesValidMessage() {
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
 
-  const c = mcl.Fr()
+  const c = new mcl.Fr()
 
   const message = 'test';
 
-  const msgHash = getHash(message);
-  // c.setStr()
-
+  const msgHash = getHash(message + X.getStr(16));
+  H = new mcl.Fr();
+  H.setStr(msgHash, 16);
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
 
   c.setByCSPRNG();
 
 
-
-
-  const message = 'test';
 
 }
 

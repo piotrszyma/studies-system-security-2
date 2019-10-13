@@ -11,7 +11,7 @@ async function performInitRequest(data) {
     const response = await axios.post('http://localhost:3000/protocols/sis/init', data)
     return response.data;
   } catch (error) {
-    console.error(error);
+    return error.response.data;
   }
 }
 async function performVerifyRequest(data) {
@@ -19,26 +19,20 @@ async function performVerifyRequest(data) {
     const response = await axios.post('http://localhost:3000/protocols/sis/verify', data)
     return response.data;
   } catch (error) {
-    console.error(error.response.data);
+    return error.response.data;
   }
 }
 
 async function testPerformValidCommitment() {
   await mcl.init(mcl.BLS12_381);
-
   const G1 = new mcl.G1();
   G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
-
   const a = new mcl.Fr();
   a.setByCSPRNG();
-
   const A = mcl.mul(G1, a);
-
   const x = new mcl.Fr();
   x.setByCSPRNG();
-
   const X = mcl.mul(G1, x);
-
   const serializedA = A.serializeToHexStr();
   const serializedX = X.serializeToHexStr();
 
@@ -51,9 +45,7 @@ async function testPerformValidCommitment() {
   })
 
   const serializedC = initResponseData.payload.c;
-
   const c = mcl.deserializeHexStrToFr(serializedC);
-
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
 
@@ -66,27 +58,21 @@ async function testPerformValidCommitment() {
   });
 
   if (!verifyResponseData.verified) {
-    throw "Should have verified, but did not."
+    throw "testPerformValidCommitment failed"
   }
 }
 
 
 async function testPerformInvalidCommitment() {
   await mcl.init(mcl.BLS12_381);
-
   const G1 = new mcl.G1();
   G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
-
   const a = new mcl.Fr();
   a.setByCSPRNG();
-
   const A = mcl.mul(G1, a);
-
   const x = new mcl.Fr();
   x.setByCSPRNG();
-
   const X = mcl.mul(G1, x);
-
   const serializedA = A.serializeToHexStr();
   const serializedX = X.serializeToHexStr();
 
@@ -100,7 +86,6 @@ async function testPerformInvalidCommitment() {
 
   const random = new mcl.Fr();
   random.setByCSPRNG();
-
   const verifyResponseData = await performVerifyRequest({
     "protocol_name": "sis",
     "session_token": initResponseData.session_token,
@@ -108,15 +93,29 @@ async function testPerformInvalidCommitment() {
       "s": random.serializeToHexStr(),
     }
   });
-
   if (verifyResponseData.verified) {
-    throw "Should have not verified, but did."
+    throw "testPerformInvalidCommitment failed"
+  }
+}
+
+async function testInvalidSessionId() {
+  const responseData = await performVerifyRequest({
+    "protocol_name": "sis",
+    "session_token": 'invalid token',
+    "payload": {
+      "s": 'lorem ipsum',
+    }
+  });
+
+  if (responseData.message !== 'Invalid session_token.') {
+    throw "testInvalidSessionId failed"
   }
 }
 
 async function main() {
   await testPerformInvalidCommitment();
   await testPerformValidCommitment();
+  await testInvalidSessionId();
 }
 
 main();

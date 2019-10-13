@@ -25,15 +25,8 @@ const schnorrRoutes = require('./routes/schnorr');
 app.use('/', indexRouter);
 app.use('/protocols/sis', schnorrRoutes);
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    error: {
-      name: err.name,
-      message: err.message,
-      data: err.data,
-    },
-  });
+app.use(function (error, req, res, next) {
+  res.json({ message: error.message });
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

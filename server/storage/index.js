@@ -14,7 +14,16 @@ async function getSessionByToken(sessionToken) {
   });
 }
 
+async function deleteSession(sessionToken) {
+  return await models.Session.destroy({
+    where: {
+      token: sessionToken
+    }
+  })
+}
+
 module.exports = {
   createSession,
   getSessionByToken,
+  deleteSession,
 }

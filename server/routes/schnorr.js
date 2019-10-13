@@ -16,6 +16,11 @@ router.post('/init', async (req, res, next) => {
     payload: { A: serializedA, X: serializedX },
   } = req.body;
 
+  if (procotolName !== 'sis') {
+    res.status(403).send("This endpoint accepts only 'sis' protocol.");
+    return;
+  }
+
   const c = new mcl.Fr();
   c.setByCSPRNG();
   const serializedC = c.serializeToHexStr();
@@ -34,7 +39,7 @@ router.post('/init', async (req, res, next) => {
   });
 });
 
-router.post('/verify', async (req, res, next) => {
+router.post('/verify', async (req, res) => {
   await mcl.init(mcl.BLS12_381);
 
   const {
@@ -44,12 +49,20 @@ router.post('/verify', async (req, res, next) => {
   } = req.body;
 
   if (procotolName !== 'sis') {
-    res.setStatus(403).send("This endpoint accepts only 'sis' protocol.")
+    res.status(403).send("This endpoint accepts only 'sis' protocol.");
+    return;
   }
 
   const session = await storage.getSessionByToken(sessionToken);
 
+  if (!session) {
+    res.status(404).send({ message: "Invalid session_token." });
+    return;
+  }
+
   const { serializedX, serializedA, serializedC } = session.params;
+
+  await storage.deleteSession(sessionToken);
 
   const s = mcl.deserializeHexStrToFr(serializedS);
   const X = mcl.deserializeHexStrToG1(serializedX);
@@ -62,7 +75,13 @@ router.post('/verify', async (req, res, next) => {
   const AC = mcl.mul(A, c);
   const XAC = mcl.add(X, AC);
 
-  res.send({ verified: XAC.serializeToHexStr() === GS.serializeToHexStr() });
+  const isValid = XAC.serializeToHexStr() === GS.serializeToHexStr();
+
+  if (isValid) {
+    res.send({ verified: true });
+  } else {
+    res.status(403).send({ verified: false });
+  }
 });
 
 module.exports = router;

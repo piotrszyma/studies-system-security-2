@@ -21,6 +21,24 @@ router.post('/init', async (req, res, next) => {
     return;
   }
 
+
+  const X = new mcl.G1();
+  const A = new mcl.G1();
+
+  try {
+    X.deserializeHexStr(serializedX);
+  } catch (error) {
+    res.status(400).send({ message: "Invalid serialized X." });
+    return;
+  }
+
+  try {
+    A.deserializeHexStr(serializedA);
+  } catch (error) {
+    res.status(400).send({ message: "Invalid serialized A." });
+    return;
+  }
+
   const c = new mcl.Fr();
   c.setByCSPRNG();
   const serializedC = c.serializeToHexStr();
@@ -64,10 +82,23 @@ router.post('/verify', async (req, res) => {
 
   await storage.deleteSession(sessionToken);
 
-  const s = mcl.deserializeHexStrToFr(serializedS);
-  const X = mcl.deserializeHexStrToG1(serializedX);
-  const A = mcl.deserializeHexStrToG1(serializedA);
-  const c = mcl.deserializeHexStrToFr(serializedC);
+
+  const s = new mcl.Fr();
+
+  try {
+    s.deserializeHexStr(serializedS);
+  } catch (error) {
+    res.status(400).send({ message: "Invalid serialized s." });
+    return;
+  }
+
+  const X = new mcl.G1();
+  const A = new mcl.G1();
+  const c = new mcl.Fr();
+
+  X.deserializeHexStr(serializedX);
+  A.deserializeHexStr(serializedA);
+  c.deserializeHexStr(serializedC);
 
   const G1 = new mcl.G1();
   G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);

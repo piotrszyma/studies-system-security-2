@@ -20,7 +20,7 @@ new OpenApiValidator({
 }).install(app);
 
 const indexRouter = require('./routes/index');
-const schnorrRoutes = require('./routes/schnorr');
+const schnorrRoutes = require('./routes/sis');
 
 app.use('/', indexRouter);
 app.use('/protocols/sis', schnorrRoutes);
@@ -29,4 +29,4 @@ app.use(function (error, req, res, next) {
   res.json({ message: error.message });
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`App listening on port ${port}!`))

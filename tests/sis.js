@@ -221,7 +221,12 @@ async function testVerifyInvalidProtocolName() {
   }
 }
 
-
+async function testApiCheckWorks() {
+  const response = await axios.post(`http://localhost:${PORT}/protocols/loremipsum/init`)
+  if (response.data.message !== 'not found') {
+    throw 'testApiCheckWorks failed'
+  }
+}
 async function main() {
   await testPerformInvalidCommitment();
   await testPerformValidCommitment();
@@ -233,6 +238,8 @@ async function main() {
   await testVerifyInvalidSessionToken();
   await testVerifyInvalidS();
   await testVerifyInvalidProtocolName();
+
+  await testApiCheckWorks();
 
 }
 

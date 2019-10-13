@@ -1,5 +1,4 @@
 const { Sequelize, Model, DataTypes } = require('sequelize');
-// const sequelize = new Sequelize('sqlite::memory:');
 const uuidv4 = require('uuid/v4');
 
 const sequelize = new Sequelize({

@@ -6,6 +6,15 @@ async function createSession(params = {}) {
   });
 }
 
+async function getSessionByToken(sessionToken) {
+  return await models.Session.findOne({
+    where: {
+      token: sessionToken
+    }
+  });
+}
+
 module.exports = {
   createSession,
+  getSessionByToken,
 }

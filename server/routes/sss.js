@@ -9,10 +9,12 @@ const CONST_G1 = {
   y: '1339506544944476473020471379941921221584933875938349620426543736416511423956333506472724655353366534992391756441569',
 }
 
+const CONST_R = '0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001';
+
 function getHash(value) {
   const hasher = crypto.createHash('sha3-256');
   hasher.update(value);
-  return hasher.getHash();
+  return hasher.digest('hex');
 }
 
 
@@ -20,16 +22,17 @@ router.post('/verify', async (req, res, next) => {
   await mcl.init(mcl.BLS12_381);
   const {
     protocol_name: procotolName,
-    payload: { A: serializedA, X: serializedX, c: serializedC, s: serializedS, msg },
+    payload: { A: serializedA, X: serializedX, s: serializedS, msg },
   } = req.body;
 
-  const hash = getHash(msg);
-
-  const H = new mcl.Fp();
+  if (procotolName !== 'sss') {
+    res.status(403).send({ message: "This endpoint accepts only 'sss' protocol." });
+    return;
+  }
 
   const X = new mcl.G1();
   try {
-    X.deserializeHexStr(serializedX);
+    X.setStr(`1 ${serializedX}`);
   } catch (error) {
     res.status(400).send({ message: "Invalid serialized X." });
     return;
@@ -37,7 +40,7 @@ router.post('/verify', async (req, res, next) => {
 
   const A = new mcl.G1();
   try {
-    A.deserializeHexStr(serializedA);
+    A.setStr(`1 ${serializedA}`);
   } catch (error) {
     res.status(400).send({ message: "Invalid serialized A." });
     return;
@@ -45,14 +48,34 @@ router.post('/verify', async (req, res, next) => {
 
   const s = new mcl.Fr();
   try {
-    s.deserializeHexStr(serializedS);
+    s.setStr(serializedS);
   } catch (error) {
     res.status(400).send({ message: "Invalid serialized s." });
     return;
   }
 
-  const c = mcl.hashAndMapToG1()
+  const msgHash = getHash(msg + X.getStr(16));
+  const hashInt = BigInt('0x' + msgHash);
+  c = new mcl.Fr();
 
+  const r = BigInt(CONST_R);
 
+  c.setStr((hashInt % r).toString());
 
+  const G1 = new mcl.G1();
+  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+
+  const GS = mcl.mul(G1, s);
+  const AC = mcl.mul(A, c);
+  const XAC = mcl.add(X, AC);
+
+  const isValid = XAC.serializeToHexStr() === GS.serializeToHexStr();
+
+  if (isValid) {
+    res.send({ valid: true });
+  } else {
+    res.status(403).send({ valid: false });
+  }
 })
+
+module.exports = router;

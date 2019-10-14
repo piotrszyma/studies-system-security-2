@@ -20,10 +20,12 @@ new OpenApiValidator({
 }).install(app);
 
 const indexRouter = require('./routes/index');
-const schnorrRoutes = require('./routes/sis');
+const sisRoutes = require('./routes/sis');
+const sssRoutes = require('./routes/sss');
 
 app.use('/', indexRouter);
-app.use('/protocols/sis', schnorrRoutes);
+app.use('/protocols/sis', sisRoutes);
+app.use('/protocols/sss', sssRoutes);
 
 app.use(function (error, req, res, next) {
   res.json({ message: error.message });

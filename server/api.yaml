@@ -224,7 +224,6 @@
               },
               "required": [
                 "protocol_name",
-                "session_token",
                 "payload"
               ]
             }
@@ -823,7 +822,6 @@
                 },
                 "required": [
                   "protocol_name",
-                  "session_token",
                   "payload"
                 ]
               }

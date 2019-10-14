@@ -225,11 +225,17 @@ async function testVerifyInvalidProtocolName() {
 }
 
 async function testApiCheckWorks() {
-  const response = await axios.post(`http://localhost:${PORT}/protocols/loremipsum/init`)
-  if (response.data.message !== 'not found') {
-    throw 'testApiCheckWorks failed'
+  try {
+    const response = await axios.post(`http://localhost:${PORT}/protocols/loremipsum/init`)
+  } catch (error) {
+    if (error.response.data.message !== 'not found') {
+      throw 'testApiCheckWorks failed'
+    }
+    return;
   }
+  throw 'testApiCheckWorks failed'
 }
+
 async function main() {
   await testPerformInvalidCommitment();
   await testPerformValidCommitment();

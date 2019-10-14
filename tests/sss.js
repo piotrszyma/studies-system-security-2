@@ -20,10 +20,8 @@ function getHash(value) {
 async function performVerifyRequest(data) {
   try {
     const response = await axios.post(`http://localhost:${PORT}/protocols/sss/verify`, data)
-    console.log(response);
     return response.data;
   } catch (error) {
-    console.log(error);
     return error.response.data;
   }
 }
@@ -53,7 +51,7 @@ async function testVerifiesValidMessage() {
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
 
-  const verifyData = performVerifyRequest({
+  const verifyData = await performVerifyRequest({
     'payload': {
       'A': A.getStr(10).slice(2),
       'X': X.getStr(10).slice(2),
@@ -67,9 +65,35 @@ async function testVerifiesValidMessage() {
     throw 'testVerifiesValidMessage failed'
   }
 }
+async function testDoesNotVerifyInvalidMessage() {
+  await mcl.init(mcl.BLS12_381);
+  const G1 = new mcl.G1();
+  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+  const a = new mcl.Fr();
+  a.setByCSPRNG();
+  const A = mcl.mul(G1, a);
+  const x = new mcl.Fr();
+  x.setByCSPRNG();
+  const X = mcl.mul(G1, x);
+
+  const verifyData = await performVerifyRequest({
+    'payload': {
+      'A': A.getStr(10).slice(2),
+      'X': X.getStr(10).slice(2),
+      'msg': 'foo',
+      's': 'a1',
+    },
+    'protocol_name': 'sss',
+  });
+
+  if (verifyData.valid) {
+    throw 'testDoesNotVerifyInvalidMessage failed'
+  }
+}
 
 async function main() {
   await testVerifiesValidMessage();
+  await testDoesNotVerifyInvalidMessage();
 }
 
 main();

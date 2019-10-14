@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mcl = require('mcl-wasm');
 const storage = require('../storage');
+const mclUtils = require('../crypto/mcl-utils');
 
 const CONST_G1 = {
   x: '3685416753713387016781088315183077757961620795782546409894578378688607592378376318836054947676345821548104185464507',
@@ -21,26 +22,23 @@ router.post('/init', async (req, res, next) => {
     return;
   }
 
-  const X = new mcl.G1();
-  const A = new mcl.G1();
+  const X = mclUtils.tryDeserializeG1(serializedX);
 
-  try {
-    X.setStr(`1 ${serializedX}`);
-  } catch (error) {
+  if (!X) {
     res.status(400).send({ message: "Invalid serialized X." });
     return;
   }
 
-  try {
-    A.setStr(`1 ${serializedA}`);
-  } catch (error) {
+  const A = mclUtils.tryDeserializeG1(serializedA);
+
+  if (!A) {
     res.status(400).send({ message: "Invalid serialized A." });
     return;
   }
 
   const c = new mcl.Fr();
   c.setByCSPRNG();
-  const serializedC = c.getStr(10);
+  const serializedC = mclUtils.serializeFr(c);
 
   const session = await storage.createSession({
     serializedA: serializedA,
@@ -56,7 +54,7 @@ router.post('/init', async (req, res, next) => {
   });
 });
 
-router.post('/verify', async (req, res) => {
+router.post('/verify', async (req, res, next) => {
   await mcl.init(mcl.BLS12_381);
 
   const {
@@ -81,25 +79,18 @@ router.post('/verify', async (req, res) => {
 
   await storage.deleteSession(sessionToken);
 
-  const s = new mcl.Fr();
+  const s = mclUtils.tryDeserializeFr(serializedS);
 
-  try {
-    s.setStr(`${serializedS}`);
-  } catch (error) {
+  if (!s) {
     res.status(400).send({ message: "Invalid serialized s." });
     return;
   }
 
-  const X = new mcl.G1();
-  const A = new mcl.G1();
-  const c = new mcl.Fr();
+  const X = mclUtils.deserializeG1(serializedX);
+  const A = mclUtils.deserializeG1(serializedA);
+  const c = mclUtils.deserializeFr(serializedC);
+  const G1 = mclUtils.getGroupGenerator();
 
-  X.setStr(`1 ${serializedX}`);
-  A.setStr(`1 ${serializedA}`);
-  c.setStr(`${serializedC}`);
-
-  const G1 = new mcl.G1();
-  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
   const GS = mcl.mul(G1, s);
   const AC = mcl.mul(A, c);
   const XAC = mcl.add(X, AC);

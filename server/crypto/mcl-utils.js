@@ -11,10 +11,6 @@ function getGroupGenerator() {
   return G1;
 }
 
-function getRandomFr() {
-
-}
-
 function serializeFr(value) {
   return value.getStr(10);
 };

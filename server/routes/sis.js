@@ -18,21 +18,21 @@ router.post('/init', async (req, res, next) => {
   } = req.body;
 
   if (procotolName !== 'sis') {
-    res.status(403).send({ message: "This endpoint accepts only 'sis' protocol." });
+    next(new Error("This endpoint accepts only 'sis' protocol."));
     return;
   }
 
   const X = mclUtils.tryDeserializeG1(serializedX);
 
   if (!X) {
-    res.status(400).send({ message: "Invalid serialized X." });
+    next(new Error("Invalid serialized X."));
     return;
   }
 
   const A = mclUtils.tryDeserializeG1(serializedA);
 
   if (!A) {
-    res.status(400).send({ message: "Invalid serialized A." });
+    next(new Error("Invalid serialized A."));
     return;
   }
 
@@ -64,25 +64,23 @@ router.post('/verify', async (req, res, next) => {
   } = req.body;
 
   if (procotolName !== 'sis') {
-    res.status(403).send({ message: "This endpoint accepts only 'sis' protocol." });
+    next(new Error("This endpoint accepts only 'sis' protocol."));
     return;
   }
 
   const session = await storage.getSessionByToken(sessionToken);
 
   if (!session) {
-    res.status(404).send({ message: "Invalid session_token." });
+    next(new Error("Invalid session_token."));
     return;
   }
 
   const { serializedX, serializedA, serializedC } = session.params;
-
   await storage.deleteSession(sessionToken);
 
   const s = mclUtils.tryDeserializeFr(serializedS);
-
   if (!s) {
-    res.status(400).send({ message: "Invalid serialized s." });
+    next(new Error("Invalid serialized s."));
     return;
   }
 

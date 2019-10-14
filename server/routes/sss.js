@@ -20,7 +20,7 @@ router.post('/verify', async (req, res, next) => {
   } = req.body;
 
   if (procotolName !== 'sss') {
-    res.status(403).send({ message: "This endpoint accepts only 'sss' protocol." });
+    next(new Error("This endpoint accepts only 'sss' protocol."));
     return;
   }
 

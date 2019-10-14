@@ -35,17 +35,15 @@ function tryDeserializeG1(serialized) {
   try {
     return deserializeG1(serialized);
   } catch {
-    console.log('deserializeG1 failed.')
-    return undefined;
+    throw new Error("Invalid serialized G1 value.");
   }
 }
 
 function tryDeserializeFr(serialized) {
   try {
     return deserializeFr(serialized);
-    console.log('deserializeFr failed.')
   } catch {
-    return undefined;
+    throw new Error("Invalid serialized Fr value.");
   }
 }
 

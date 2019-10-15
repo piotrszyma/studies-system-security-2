@@ -19,13 +19,9 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 }).install(app);
 
-const indexRouter = require('./routes/index');
-const sisRoutes = require('./routes/sis');
-const sssRoutes = require('./routes/sss');
-
-app.use('/', indexRouter);
-app.use('/protocols/sis', sisRoutes);
-app.use('/protocols/sss', sssRoutes);
+app.use('/protocols', require('./routes/list'));
+app.use('/protocols/sis', require('./routes/sis'));
+app.use('/protocols/sss', require('./routes/sss'));
 
 app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });

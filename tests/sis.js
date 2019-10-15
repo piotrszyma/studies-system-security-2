@@ -8,9 +8,13 @@ const CONST_G1 = {
 
 const PORT = 3000;
 
+const LOGGER = false;
+
 async function performInitRequest(data) {
   try {
-    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/init`, data)
+    if (LOGGER) console.log(data);
+    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/init`, data);
+    if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -18,7 +22,9 @@ async function performInitRequest(data) {
 }
 async function performVerifyRequest(data) {
   try {
-    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/verify`, data)
+    if (LOGGER) console.log(data);
+    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/verify`, data);
+    if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -237,19 +243,18 @@ async function testApiCheckWorks() {
 }
 
 async function main() {
-  // await testPerformInvalidCommitment();
+  await testPerformInvalidCommitment();
   await testPerformValidCommitment();
 
-  // await testInitInvalidA();
-  // await testInitInvalidX();
-  // await testInitInvalidProtocolName();
+  await testInitInvalidA();
+  await testInitInvalidX();
+  await testInitInvalidProtocolName();
 
-  // await testVerifyInvalidSessionToken();
-  // await testVerifyInvalidS();
-  // await testVerifyInvalidProtocolName();
+  await testVerifyInvalidSessionToken();
+  await testVerifyInvalidS();
+  await testVerifyInvalidProtocolName();
 
-  // await testApiCheckWorks();
-
+  await testApiCheckWorks();
 }
 
 main();

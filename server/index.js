@@ -22,6 +22,7 @@ new OpenApiValidator({
 app.use('/protocols', require('./routes/list'));
 app.use('/protocols/sis', require('./routes/sis'));
 app.use('/protocols/sss', require('./routes/sss'));
+app.use('/protocols/ois', require('./routes/ois'));
 
 app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });

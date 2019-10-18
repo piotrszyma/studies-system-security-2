@@ -2,13 +2,18 @@ const crypto = require('crypto');
 
 const mcl = require('mcl-wasm');
 
-const { CONST_G1, CONST_R } = require('../consts.js');
+const { CONST_G1, CONST_G2, CONST_R } = require('../consts.js');
 
+function getGenG1() {
+  const generator = new mcl.G1();
+  generator.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+  return generator;
+}
 
-function getGroupGenerator() {
-  const G1 = new mcl.G1();
-  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
-  return G1;
+function getGenG2() {
+  const generator = new mcl.G1();
+  generator.setStr(`1 ${CONST_G2.x} ${CONST_G2.y}`);
+  return generator;
 }
 
 function serializeFr(value) {
@@ -61,7 +66,8 @@ function hashFr(value) {
 module.exports = {
   tryDeserializeFr,
   tryDeserializeG1,
-  getGroupGenerator,
+  getGenG1,
+  getGenG2,
   hashFr,
   serializeFr,
   deserializeFr,

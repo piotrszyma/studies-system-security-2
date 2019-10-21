@@ -53,7 +53,7 @@ function tryDeserializeFr(serialized) {
 }
 
 function hashFr(value) {
-  const hasher = crypto.createHash('sha3-256');
+  const hasher = crypto.createHash('sha3-512');
   hasher.update(value);
   const hexHash = hasher.digest('hex');
   const bigIntHash = BigInt('0x' + hexHash);

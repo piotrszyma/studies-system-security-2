@@ -33,14 +33,14 @@ async function performVerifyRequest(data) {
 
 async function testPerformValidCommitment() {
   await mcl.init(mcl.BLS12_381);
-  const G1 = new mcl.G1();
-  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+  const g1 = new mcl.G1();
+  g1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
   const a = new mcl.Fr();
   a.setByCSPRNG();
-  const A = mcl.mul(G1, a);
+  const A = mcl.mul(g1, a);
   const x = new mcl.Fr();
   x.setByCSPRNG();
-  const X = mcl.mul(G1, x);
+  const X = mcl.mul(g1, x);
 
   const serializedA = A.getStr(10).slice(2);
   const serializedX = X.getStr(10).slice(2);
@@ -57,8 +57,7 @@ async function testPerformValidCommitment() {
   const c = new mcl.Fr();
   c.setStr(serializedC);
 
-  const ac = mcl.mul(a, c);
-  const s = mcl.add(ac, x);
+  const s = mcl.add(x, mcl.mul(a, c));
 
   const verifyResponseData = await performVerifyRequest({
     "protocol_name": "sis",
@@ -76,14 +75,14 @@ async function testPerformValidCommitment() {
 
 async function testPerformInvalidCommitment() {
   await mcl.init(mcl.BLS12_381);
-  const G1 = new mcl.G1();
-  G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
+  const g1 = new mcl.G1();
+  g1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
   const a = new mcl.Fr();
   a.setByCSPRNG();
-  const A = mcl.mul(G1, a);
+  const A = mcl.mul(g1, a);
   const x = new mcl.Fr();
   x.setByCSPRNG();
-  const X = mcl.mul(G1, x);
+  const X = mcl.mul(g1, x);
   const serializedA = A.getStr(10).slice(2);
   const serializedX = X.getStr(10).slice(2);
 

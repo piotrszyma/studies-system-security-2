@@ -18,7 +18,7 @@ app.use(morgan('combined'));
 
 new OpenApiValidator({
   apiSpec: 'api.yaml',
-  validateResponses: true, // false by default
+  validateResponses: false, // its broken
 }).install(app);
 
 app.use('/protocols', require('./routes/list'));

@@ -10,10 +10,11 @@ function getGenG1() {
 }
 
 function getGenG2() {
-  const generator = new mcl.G2();
+  const generator = new mcl.G1();
   generator.setStr(`1 ${config.points.g2.x} ${config.points.g2.y}`);
   return generator;
 }
+
 
 function serializeFr(value) {
   return value.getStr(10);

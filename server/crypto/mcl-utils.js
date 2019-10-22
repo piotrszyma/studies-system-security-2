@@ -49,12 +49,8 @@ function hashFr(value) {
   const hasher = crypto.createHash('sha3-512');
   hasher.update(value);
   return mcl.hashToFr(hasher.digest('hex'));
-  // const hexHash = hasher.digest('hex');
-  // const bigIntHash = BigInt('0x' + hexHash);
-  // const hashFr = new mcl.Fr();
-  // hashFr.setStr((bigIntHash % modulus).toString());
-  // return hashFr;
 }
+
 
 module.exports = {
   tryDeserializeFr,

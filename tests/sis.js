@@ -70,6 +70,8 @@ async function testPerformValidCommitment() {
     }
   });
 
+  console.log(verifyResponseData);
+
   if (!verifyResponseData.verified) {
     throw "testPerformValidCommitment failed"
   }

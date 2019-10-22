@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('../config');
+const morgan = require('morgan');
 
 const { OpenApiValidator } = require("express-openapi-validator");
 
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(morgan('combined'));
 
 new OpenApiValidator({
   apiSpec: 'api.yaml',

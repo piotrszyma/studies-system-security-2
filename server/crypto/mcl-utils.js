@@ -3,9 +3,15 @@ const mcl = require('mcl-wasm');
 
 const config = require('../../config');
 
-function getGeneratorInG1() {
+function getGenG1() {
   const generator = new mcl.G1();
   generator.setStr(`1 ${config.points.g1.x} ${config.points.g1.y}`);
+  return generator;
+}
+
+function getGenG2() {
+  const generator = new mcl.G2();
+  generator.setStr(`1 ${config.points.g2.x} ${config.points.g2.y}`);
   return generator;
 }
 
@@ -55,7 +61,8 @@ function hashFr(value) {
 module.exports = {
   tryDeserializeFr,
   tryDeserializeG1,
-  getGeneratorInG1,
+  getGenG1,
+  getGenG2,
   hashFr,
   serializeFr,
   deserializeFr,

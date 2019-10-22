@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const config = require('../config');
 
 const { OpenApiValidator } = require("express-openapi-validator");
 
-const app = express()
-const port = 3000
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.text());
@@ -28,4 +28,4 @@ app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });
 });
 
-app.listen(port, () => console.log(`App listening on port ${port}!`));
+app.listen(config.port, () => console.log(`App listening on port ${config.port}!`));

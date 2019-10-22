@@ -1,19 +1,22 @@
 const mcl = require('mcl-wasm');
 const axios = require('axios');
 
+const config = require('../config');
+
 const CONST_G1 = {
   x: '3685416753713387016781088315183077757961620795782546409894578378688607592378376318836054947676345821548104185464507',
   y: '1339506544944476473020471379941921221584933875938349620426543736416511423956333506472724655353366534992391756441569',
 }
 
-const PORT = 3000;
+const PORT = config.testedPort;
+const ADDRESS = config.testedAddress;
 
 const LOGGER = false;
 
 async function performInitRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/init`, data);
+    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sis/init`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
@@ -23,7 +26,7 @@ async function performInitRequest(data) {
 async function performVerifyRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://localhost:${PORT}/protocols/sis/verify`, data);
+    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sis/verify`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
@@ -242,18 +245,18 @@ async function testApiCheckWorks() {
 }
 
 async function main() {
-  await testPerformInvalidCommitment();
+  // await testPerformInvalidCommitment();
   await testPerformValidCommitment();
 
-  await testInitInvalidA();
-  await testInitInvalidX();
-  await testInitInvalidProtocolName();
+  // await testInitInvalidA();
+  // await testInitInvalidX();
+  // await testInitInvalidProtocolName();
 
-  await testVerifyInvalidSessionToken();
-  await testVerifyInvalidS();
-  await testVerifyInvalidProtocolName();
+  // await testVerifyInvalidSessionToken();
+  // await testVerifyInvalidS();
+  // await testVerifyInvalidProtocolName();
 
-  await testApiCheckWorks();
+  // await testApiCheckWorks();
 }
 
 main();

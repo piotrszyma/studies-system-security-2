@@ -2,14 +2,15 @@ const mcl = require('mcl-wasm');
 const axios = require('axios');
 const crypto = require('crypto');
 
-const PORT = 3000;
+const config = require('../config');
+
+const PORT = config.testedPort;
+const ADDRESS = config.testedAddress;
 
 const CONST_G1 = {
   x: '3685416753713387016781088315183077757961620795782546409894578378688607592378376318836054947676345821548104185464507',
   y: '1339506544944476473020471379941921221584933875938349620426543736416511423956333506472724655353366534992391756441569',
 }
-
-const CONST_R = '0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001';
 
 function getHash(value) {
   const hasher = crypto.createHash('sha3-512');
@@ -19,7 +20,7 @@ function getHash(value) {
 
 async function performVerifyRequest(data) {
   try {
-    const response = await axios.post(`http://localhost:${PORT}/protocols/sss/verify`, data)
+    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sss/verify`, data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -38,15 +39,9 @@ async function testVerifiesValidMessage() {
   x.setByCSPRNG();
   const X = mcl.mul(G1, x);
 
-  const r = BigInt(CONST_R);
-
   const message = 'test';
-
   const msgHash = getHash(message + X.getStr(10).slice(2));
-  const hashInt = BigInt('0x' + msgHash);
-
-  c = new mcl.Fr();
-  c.setStr((hashInt % r).toString());
+  const c = mcl.hashToFr(msgHash);
 
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
@@ -60,6 +55,8 @@ async function testVerifiesValidMessage() {
     },
     'protocol_name': 'sss',
   });
+
+  console.log(verifyData);
 
   if (!verifyData.valid) {
     throw 'testVerifiesValidMessage failed'

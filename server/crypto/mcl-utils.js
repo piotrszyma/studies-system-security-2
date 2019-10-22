@@ -1,18 +1,11 @@
 const crypto = require('crypto');
-
 const mcl = require('mcl-wasm');
 
-const { CONST_G1, CONST_G2, CONST_R } = require('../consts.js');
+const config = require('../../config');
 
-function getGenG1() {
+function getGeneratorInG1() {
   const generator = new mcl.G1();
-  generator.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
-  return generator;
-}
-
-function getGenG2() {
-  const generator = new mcl.G1();
-  generator.setStr(`1 ${CONST_G2.x} ${CONST_G2.y}`);
+  generator.setStr(`1 ${config.points.g1.x} ${config.points.g1.y}`);
   return generator;
 }
 
@@ -55,19 +48,18 @@ function tryDeserializeFr(serialized) {
 function hashFr(value) {
   const hasher = crypto.createHash('sha3-512');
   hasher.update(value);
-  const hexHash = hasher.digest('hex');
-  const bigIntHash = BigInt('0x' + hexHash);
-  const hashFr = new mcl.Fr();
-  const modulus = BigInt(CONST_R);
-  hashFr.setStr((bigIntHash % modulus).toString());
-  return hashFr;
+  return mcl.hashToFr(hasher.digest('hex'));
+  // const hexHash = hasher.digest('hex');
+  // const bigIntHash = BigInt('0x' + hexHash);
+  // const hashFr = new mcl.Fr();
+  // hashFr.setStr((bigIntHash % modulus).toString());
+  // return hashFr;
 }
 
 module.exports = {
   tryDeserializeFr,
   tryDeserializeG1,
-  getGenG1,
-  getGenG2,
+  getGeneratorInG1,
   hashFr,
   serializeFr,
   deserializeFr,

@@ -55,7 +55,25 @@ function tryDeserializeFr(serialized) {
 function hashFr(value) {
   const hasher = crypto.createHash('sha3-512');
   hasher.update(value);
-  return mcl.hashToFr(hasher.digest('hex'));
+  const msgHash = hasher.digest('hex');
+  const r = BigInt(config.consts.r);
+  const hashInt = BigInt('0x' + msgHash);
+  c = new mcl.Fr();
+  c.setStr((hashInt % r).toString());
+  return c;
+}
+
+function hash(value) {
+  const hasher = crypto.createHash('sha3-512');
+  hasher.update(value);
+  const msgHash = hasher.digest('hex');
+  const r = BigInt(config.consts.r);
+  const hashInt = BigInt('0x' + msgHash);
+  const intValue = (hashInt % r).toString();
+  return intValue;
+  // c = new mcl.Fr();
+  // c.setStr((hashInt % r).toString());
+  // return c;
 }
 
 
@@ -65,6 +83,7 @@ module.exports = {
   getGenG1,
   getGenG2,
   hashFr,
+  hash,
   serializeFr,
   deserializeFr,
   serializeG1,

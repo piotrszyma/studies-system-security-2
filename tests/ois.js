@@ -13,6 +13,7 @@ const CONST_G2 = {
   y: '2665798332422762660334686159210698639947668680862640755137811598895238932478193747736307724249253853210778728799013',
 }
 
+const ADDRESS = config.testedAddress;
 const PORT = config.testedPort;
 
 const LOGGER = false;
@@ -20,7 +21,7 @@ const LOGGER = false;
 async function performInitRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://localhost:${PORT}/protocols/ois/init`, data);
+    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/ois/init`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
@@ -31,7 +32,7 @@ async function performInitRequest(data) {
 async function performVerifyRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://localhost:${PORT}/protocols/ois/verify`, data);
+    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/ois/verify`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {

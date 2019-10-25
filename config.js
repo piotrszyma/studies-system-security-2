@@ -1,5 +1,5 @@
 const config = {
-  port: 3000,
+  port: 4000,
   address: {
     PK: '10.8.0.4',
     ABa: '10.8.0.8',
@@ -23,11 +23,18 @@ const config = {
       x: '2144250947445192081071618466765046647019257686245947349033844530891338159027816696711238671324221321317530545114427',
       y: '2665798332422762660334686159210698639947668680862640755137811598895238932478193747736307724249253853210778728799013',
     }
+  },
+  consts: {
+    r: '0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001',
   }
+};
+
+const testedData = {
+  testedAddress: config.address.RR,
+  testedPort: config.port,
 };
 
 module.exports = {
   ...config,
-  testedAddress: config.address.local,
-  testedPort: config.port,
+  ...testedData,
 }

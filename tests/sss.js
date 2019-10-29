@@ -29,21 +29,38 @@ async function testVerifiesValidMessage() {
   G1.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
   const a = new mcl.Fr();
   a.setByCSPRNG();
-  const A = mcl.mul(G1, a);
   const x = new mcl.Fr();
   x.setByCSPRNG();
+
+  const A = mcl.mul(G1, a);
   const X = mcl.mul(G1, x);
 
-
   const message = 'test';
-  // const msgHash = getHash(message + X.getStr(10).slice(2));
-  // const c = mcl.hashToFr(msgHash);
-  const intC = mclUtils.hash(message + X.getStr(10).slice(2));
+
+  const value = message + X.getStr(10).slice(2);
+  const hasher = crypto.createHash('sha3-512');
+  hasher.update(value);
+  const msgHash = hasher.digest('hex');
+  const r = BigInt(config.consts.r);
+  const hashInt = BigInt('0x' + msgHash);
+  const intValue = (hashInt % r).toString();
+
   const c = new mcl.Fr();
-  c.setInt(intC);
+  c.setInt(intValue.toString());
+
+  // s = ac + x
 
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
+
+  console.log('r', r);
+  console.log('x', mclUtils.serializeFr(x));
+  console.log('a', mclUtils.serializeFr(a));
+  console.log('X', mclUtils.serializeG1(X));
+  console.log('A', mclUtils.serializeG1(A));
+  console.log('msg', message);
+  console.log('h', intValue);
+  console.log('s', s.getStr(10));
 
   const verifyData = await performVerifyRequest({
     'payload': {

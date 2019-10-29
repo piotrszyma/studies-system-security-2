@@ -16,7 +16,7 @@ async function testHash() {
 
   const intHashFr = new mcl.Fr();
   intHashFr.setInt(intHash);
-  console.log(intHash);
+  console.log(intHash.toString() === h);
   // H.setInt(intHash);
   // console.log(H.getStr(10));
 }

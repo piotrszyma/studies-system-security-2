@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('../config');
 const morgan = require('morgan');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
 
 const { OpenApiValidator } = require("express-openapi-validator");
 
@@ -16,12 +19,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(morgan('combined'));
 
-new OpenApiValidator({
-  apiSpec: 'api.yaml',
-  validateResponses: false, // its broken
-}).install(app);
+// TODO: Add validator.
+// new OpenApiValidator({
+//   apiSpec: 'api.yaml',
+//   validateResponses: false, // its broken
+// }).install(app);
 
-app.use('/protocols', require('./routes/list'));
+app.use('/protocols/', require('./routes/list'));
 app.use('/protocols/sis', require('./routes/sis'));
 app.use('/protocols/sss', require('./routes/sss'));
 app.use('/protocols/ois', require('./routes/ois'));
@@ -30,4 +34,12 @@ app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });
 });
 
-app.listen(config.port, () => console.log(`App listening on port ${config.port}!`));
+// app.listen(config.port, () => console.log(`App listening on port ${config.port}!`));
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem'),
+};
+
+http.createServer(app).listen(80);
+https.createServer(options, app).listen(443);

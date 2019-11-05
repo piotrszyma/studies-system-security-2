@@ -71,9 +71,6 @@ function hash(value) {
   const hashInt = BigInt('0x' + msgHash);
   const intValue = (hashInt % r).toString();
   return intValue;
-  // c = new mcl.Fr();
-  // c.setStr((hashInt % r).toString());
-  // return c;
 }
 
 

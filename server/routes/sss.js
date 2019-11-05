@@ -21,9 +21,18 @@ router.post('/verify', asyncMiddleware(async (req, res, next) => {
   const A = mclUtils.tryDeserializeG1(serializedA);
   const s = mclUtils.tryDeserializeFr(serializedS);
 
-  const intC = mclUtils.hash(msg + serializedX);
+  console.log('X: ' + serializedX);
+  console.log('A: ' + serializedA);
+  console.log('S: ' + serializedS);
+  console.log('msg: ' + msg);
+
+  const hash = mclUtils.hash(msg + serializedX);
+
+  console.log('h: ' + hash);
+
   const c = new mcl.Fr();
-  c.setInt(intC);
+  // TODO: Analyze setStr / setInt
+  c.setStr(hash);
 
   const gen1 = mclUtils.getGenG1();
   const GS = mcl.mul(gen1, s);

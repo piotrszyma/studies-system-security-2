@@ -46,7 +46,7 @@ async function testVerifiesValidMessage() {
   const intValue = (hashInt % r).toString();
 
   const c = new mcl.Fr();
-  c.setInt(intValue.toString());
+  c.setStr(intValue);
 
   // s = ac + x
 
@@ -104,9 +104,64 @@ async function testDoesNotVerifyInvalidMessage() {
   }
 }
 
+function hash(value) {
+  const hasher = crypto.createHash('sha3-512');
+  hasher.update(value);
+  const msgHash = hasher.digest('hex');
+  const r = BigInt(config.consts.r);
+  const hashInt = BigInt('0x' + msgHash);
+  const intValue = (hashInt % r).toString();
+  return intValue;
+}
+
+function getGenG1() {
+  const generator = new mcl.G1();
+  generator.setStr(`1 ${config.points.g1.x} ${config.points.g1.y}`);
+  return generator;
+}
+
+async function testManualCheck() {
+  await mcl.init(mcl.BLS12_381);
+
+  const data = { "s": "4114369594741764151762242958576205783703308812414145843692224912212669312960", "X": "439132420359944732041934199041796121121775224900245881994221908630457204768078771956440623442563355915663033823408 1786707094151755482393927430230334264333767642487098464595973465638837910974739495628921249964351986083748504307430", "A": "1913351124329040704019586578169075444732594455544821113976778738918542363198609091363477112095879286661912788308362 2799816536234905978788220456813299282290089797649596775899493188467111082486831403737459253452419026918808857468954", "msg": "MY MESSAGE" }
+  const serializedS = data["s"];
+  const serializedX = data["X"];
+  const serializedA = data["A"];
+  const msg = data["msg"];
+
+  console.log(`X: ${serializedX}`);
+  console.log(`A: ${serializedA}`);
+  console.log(`s: ${serializedS}`);
+
+  const s = new mcl.Fr();
+  s.setStr(serializedS);
+  const A = new mcl.G1();
+  A.setStr(`1 ${serializedA}`);
+  const X = new mcl.G1();
+  X.setStr(`1 ${serializedX}`);
+
+  console.log('input: ' + msg + serializedX);
+  console.log('output: ' + hash(msg + serializedX));
+
+  const c = new mcl.Fr();
+  c.setStr(hash(msg + serializedX));
+  console.log(`c: ${c.getStr(10)}`);
+
+  const g = getGenG1();
+  const GS = mcl.mul(g, s);
+  const AC = mcl.mul(A, c);
+  const XAC = mcl.add(X, AC);
+  console.log(`GS: ${GS.getStr(10).slice(2)}`);
+  console.log(`AC: ${AC.getStr(10).slice(2)}`);
+  console.log(`XAC: ${XAC.getStr(10).slice(2)}`);
+
+  console.log(XAC.serializeToHexStr() === GS.serializeToHexStr());
+};
+
 async function main() {
-  await testVerifiesValidMessage();
+  // await testVerifiesValidMessage();
   // await testDoesNotVerifyInvalidMessage();
+  await testManualCheck();
 }
 
 main();

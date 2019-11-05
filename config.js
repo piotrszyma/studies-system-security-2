@@ -1,5 +1,8 @@
 const config = {
-  port: 4000,
+  port: 80,
+  ports: {
+    PK: 8080,
+  },
   address: {
     PK: '10.8.0.4',
     ABa: '10.8.0.8',
@@ -30,8 +33,8 @@ const config = {
 };
 
 const testedData = {
-  testedAddress: config.address.RR,
-  testedPort: config.port,
+  testedAddress: config.address.PK,
+  testedPort: config.ports.PK,
 };
 
 module.exports = {

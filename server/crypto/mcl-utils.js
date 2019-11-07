@@ -30,11 +30,29 @@ function serializeG1(value) {
   return value.getStr(10).slice(2);
 };
 
+function serializeG2(value) {
+  return value.getStr(10).slice(2);
+}
+
 function deserializeG1(value) {
   const g1 = new mcl.G1();
   g1.setStr(`1 ${value}`);
   return g1;
 };
+
+function deserializeG2(value) {
+  const g2 = new mcl.G2();
+  g2.setStr(`1 ${value}`);
+  return g2;
+}
+
+function tryDeserializeG2(serialized) {
+  try {
+    return deserializeG2(serialized);
+  } catch {
+    throw new Error("Invalid serialized G2 value.");
+  }
+}
 
 function tryDeserializeG1(serialized) {
   try {
@@ -77,6 +95,7 @@ function hash(value) {
 module.exports = {
   tryDeserializeFr,
   tryDeserializeG1,
+  tryDeserializeG2,
   getGenG1,
   getGenG2,
   hashFr,
@@ -85,4 +104,6 @@ module.exports = {
   deserializeFr,
   serializeG1,
   deserializeG1,
+  serializeG2,
+  deserializeG2,
 }

@@ -21,7 +21,7 @@ const LOGGER = false;
 async function performInitRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/ois/init`, data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/ois/init`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {
@@ -32,7 +32,7 @@ async function performInitRequest(data) {
 async function performVerifyRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/ois/verify`, data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/ois/verify`, data);
     if (LOGGER) console.log(response.data);
     return response.data;
   } catch (error) {

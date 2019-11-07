@@ -2,8 +2,11 @@ const config = {
   port: 80,
   ports: {
     PK: 8080,
+    PSdomainHTTPS: 8443,
   },
   address: {
+    PSdomain: 'pszyma.thenflash.com',
+    PKdomain: 'pkawa.thenflash.com',
     PK: '10.8.0.4',
     ABa: '10.8.0.8',
     ABu: '10.8.0.6',
@@ -33,8 +36,8 @@ const config = {
 };
 
 const testedData = {
-  testedAddress: config.address.PK,
-  testedPort: config.ports.PK,
+  testedAddress: config.address.PKdomain,
+  testedPort: config.ports.PSdomainHTTPS,
 };
 
 module.exports = {

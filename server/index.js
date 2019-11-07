@@ -29,6 +29,7 @@ app.use('/protocols/', require('./routes/list'));
 app.use('/protocols/sis', require('./routes/sis'));
 app.use('/protocols/sss', require('./routes/sss'));
 app.use('/protocols/ois', require('./routes/ois'));
+app.use('/protocols/msis', require('./routes/msis'));
 
 app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });
@@ -37,9 +38,10 @@ app.use(function (error, req, res, next) {
 // app.listen(config.port, () => console.log(`App listening on port ${config.port}!`));
 
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem'),
+  key: fs.readFileSync('cert/privkey.pem'),
+  cert: fs.readFileSync('cert/cert.pem'),
+  ca: fs.readFileSync('cert/chain.pem'),
 };
 
-http.createServer(app).listen(80);
-https.createServer(options, app).listen(443);
+http.createServer(app).listen(8080);
+https.createServer(options, app).listen(8443);

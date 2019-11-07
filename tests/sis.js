@@ -11,25 +11,27 @@ const CONST_G1 = {
 const PORT = config.testedPort;
 const ADDRESS = config.testedAddress;
 
-const LOGGER = false;
+const LOGGER = true;
 
 async function performInitRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sis/init`, data);
-    if (LOGGER) console.log(response.data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sis/init`, data);
+    if (LOGGER) console.log(response);
     return response.data;
   } catch (error) {
+    console.log(error);
     return error.response.data;
   }
 }
 async function performVerifyRequest(data) {
   try {
     if (LOGGER) console.log(data);
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sis/verify`, data);
-    if (LOGGER) console.log(response.data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sis/verify`, data);
+    if (LOGGER) console.log(response);
     return response.data;
   } catch (error) {
+    console.log(error);
     return error.response.data;
   }
 }

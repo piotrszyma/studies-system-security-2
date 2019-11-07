@@ -15,7 +15,7 @@ const CONST_G1 = {
 
 async function performVerifyRequest(data) {
   try {
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/sss/verify`, data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sss/verify`, data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -159,9 +159,9 @@ async function testManualCheck() {
 };
 
 async function main() {
-  // await testVerifiesValidMessage();
+  await testVerifiesValidMessage();
   // await testDoesNotVerifyInvalidMessage();
-  await testManualCheck();
+  // await testManualCheck();
 }
 
 main();

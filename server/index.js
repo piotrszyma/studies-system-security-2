@@ -30,12 +30,11 @@ app.use('/protocols/sis', require('./routes/sis'));
 app.use('/protocols/sss', require('./routes/sss'));
 app.use('/protocols/ois', require('./routes/ois'));
 app.use('/protocols/msis', require('./routes/msis'));
+app.use('/protocols/blsss', require('./routes/blsss'));
 
 app.use(function (error, req, res, next) {
   res.status(404).json({ message: error.message });
 });
-
-// app.listen(config.port, () => console.log(`App listening on port ${config.port}!`));
 
 const options = {
   key: fs.readFileSync('cert/privkey.pem'),

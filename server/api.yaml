@@ -19,6 +19,15 @@
     },
     {
       "name": "Modified Schnor Identification Scheme"
+    },
+    {
+      "name": "Boneh–Lynn–Shacham Signature Scheme"
+    },
+    {
+      "name": "Goh-Jarecki Signature Scheme"
+    },
+    {
+      "name": "Naxos AKE"
     }
   ],
   "components": {
@@ -309,6 +318,165 @@
             }
           }
         }
+      },
+      "BlsssVerify": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocol_name": {
+                  "description": "name of protocol, must be `blsss`",
+                  "type": "string",
+                  "example": "blsss"
+                },
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "sigma": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "A": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Test message"
+                    }
+                  },
+                  "required": [
+                    "sigma",
+                    "A",
+                    "msg"
+                  ]
+                }
+              },
+              "required": [
+                "protocol_name",
+                "payload"
+              ]
+            }
+          }
+        }
+      },
+      "GjssVerify": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocol_name": {
+                  "description": "name of protocol, must be `gjss`",
+                  "type": "string",
+                  "example": "gjss"
+                },
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "sigma": {
+                      "type": "object",
+                      "properties": {
+                        "s": {
+                          "description": "stringified integer value, multiple values should be separated by single space",
+                          "type": "string",
+                          "example": "12345 67890"
+                        },
+                        "c": {
+                          "description": "stringified integer value, multiple values should be separated by single space",
+                          "type": "string",
+                          "example": "12345 67890"
+                        },
+                        "r": {
+                          "description": "stringified integer value, multiple values should be separated by single space",
+                          "type": "string",
+                          "example": "12345 67890"
+                        },
+                        "z": {
+                          "description": "stringified integer value, multiple values should be separated by single space",
+                          "type": "string",
+                          "example": "12345 67890"
+                        }
+                      },
+                      "required": [
+                        "s",
+                        "c",
+                        "r",
+                        "z"
+                      ]
+                    },
+                    "A": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "Test message"
+                    }
+                  },
+                  "required": [
+                    "sigma",
+                    "A",
+                    "msg"
+                  ]
+                }
+              },
+              "required": [
+                "protocol_name",
+                "payload"
+              ]
+            }
+          }
+        }
+      },
+      "NaxosExchange": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "protocol_name": {
+                  "description": "name of protocol, must be `naxos`",
+                  "type": "string",
+                  "example": "naxos"
+                },
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "X": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "A": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "64 character long message",
+                      "description": "test message, must be 64 ASCII char long"
+                    }
+                  },
+                  "required": [
+                    "X",
+                    "A",
+                    "msg"
+                  ]
+                }
+              },
+              "required": [
+                "protocol_name",
+                "payload"
+              ]
+            }
+          }
+        }
       }
     },
     "responses": {
@@ -539,6 +707,90 @@
               },
               "required": [
                 "verified"
+              ]
+            }
+          }
+        }
+      },
+      "BlsssVerify": {
+        "description": "Response will have `valid` set to true if signature is valid, and to false if it is invalid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "valid": {
+                  "type": "boolean",
+                  "example": true
+                }
+              },
+              "required": [
+                "valid"
+              ]
+            }
+          }
+        }
+      },
+      "GjssVerify": {
+        "description": "Response will have `valid` set to true if signature is valid, and to false if it is invalid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "valid": {
+                  "type": "boolean",
+                  "example": true
+                }
+              },
+              "required": [
+                "valid"
+              ]
+            }
+          }
+        }
+      },
+      "NaxosExchange": {
+        "description": "Does key exchange, return msg used for verification if keys are valid.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Y": {
+                  "description": "stringified integer value, multiple values should be separated by single space",
+                  "type": "string",
+                  "example": "12345 67890"
+                },
+                "msg": {
+                  "type": "string",
+                  "example": "36oaV/Q6I1c3RAgCfGLCacQ4+9TKE26wS0AG9BiDIHZUKvRLuHD+Ud7JY+SIa1A/Zr+mlDgqYzaOfllWfOaSZw==",
+                  "description": "base64(sha3_512(K | msg))"
+                }
+              },
+              "required": [
+                "Y",
+                "msg"
+              ]
+            }
+          }
+        }
+      },
+      "NaxosPkey": {
+        "description": "Returns server public key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "B": {
+                  "description": "stringified integer value, multiple values should be separated by single space",
+                  "type": "string",
+                  "example": "12345 67890"
+                }
+              },
+              "required": [
+                "B"
               ]
             }
           }
@@ -1163,6 +1415,289 @@
                   },
                   "required": [
                     "verified"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protocols/blsss/verify": {
+      "post": {
+        "tags": [
+          "Boneh–Lynn–Shacham Signature Scheme"
+        ],
+        "operationId": "blsssProtocolCommit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "protocol_name": {
+                    "description": "name of protocol, must be `blsss`",
+                    "type": "string",
+                    "example": "blsss"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "sigma": {
+                        "description": "stringified integer value, multiple values should be separated by single space",
+                        "type": "string",
+                        "example": "12345 67890"
+                      },
+                      "A": {
+                        "description": "stringified integer value, multiple values should be separated by single space",
+                        "type": "string",
+                        "example": "12345 67890"
+                      },
+                      "msg": {
+                        "type": "string",
+                        "example": "Test message"
+                      }
+                    },
+                    "required": [
+                      "sigma",
+                      "A",
+                      "msg"
+                    ]
+                  }
+                },
+                "required": [
+                  "protocol_name",
+                  "payload"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response will have `valid` set to true if signature is valid, and to false if it is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "valid": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  },
+                  "required": [
+                    "valid"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protocols/gjss/verify": {
+      "post": {
+        "tags": [
+          "Goh-Jarecki Signature Scheme"
+        ],
+        "operationId": "gjssProtocolCommit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "protocol_name": {
+                    "description": "name of protocol, must be `gjss`",
+                    "type": "string",
+                    "example": "gjss"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "sigma": {
+                        "type": "object",
+                        "properties": {
+                          "s": {
+                            "description": "stringified integer value, multiple values should be separated by single space",
+                            "type": "string",
+                            "example": "12345 67890"
+                          },
+                          "c": {
+                            "description": "stringified integer value, multiple values should be separated by single space",
+                            "type": "string",
+                            "example": "12345 67890"
+                          },
+                          "r": {
+                            "description": "stringified integer value, multiple values should be separated by single space",
+                            "type": "string",
+                            "example": "12345 67890"
+                          },
+                          "z": {
+                            "description": "stringified integer value, multiple values should be separated by single space",
+                            "type": "string",
+                            "example": "12345 67890"
+                          }
+                        },
+                        "required": [
+                          "s",
+                          "c",
+                          "r",
+                          "z"
+                        ]
+                      },
+                      "A": {
+                        "description": "stringified integer value, multiple values should be separated by single space",
+                        "type": "string",
+                        "example": "12345 67890"
+                      },
+                      "msg": {
+                        "type": "string",
+                        "example": "Test message"
+                      }
+                    },
+                    "required": [
+                      "sigma",
+                      "A",
+                      "msg"
+                    ]
+                  }
+                },
+                "required": [
+                  "protocol_name",
+                  "payload"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response will have `valid` set to true if signature is valid, and to false if it is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "valid": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  },
+                  "required": [
+                    "valid"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protocols/naxos/pkey": {
+      "get": {
+        "tags": [
+          "Naxos AKE"
+        ],
+        "operationId": "gjssProtocolCommit",
+        "responses": {
+          "200": {
+            "description": "Returns server public key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "B": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    }
+                  },
+                  "required": [
+                    "B"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/protocols/naxos/exchange": {
+      "post": {
+        "tags": [
+          "Naxos AKE"
+        ],
+        "operationId": "gjssProtocolCommit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "protocol_name": {
+                    "description": "name of protocol, must be `naxos`",
+                    "type": "string",
+                    "example": "naxos"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "X": {
+                        "description": "stringified integer value, multiple values should be separated by single space",
+                        "type": "string",
+                        "example": "12345 67890"
+                      },
+                      "A": {
+                        "description": "stringified integer value, multiple values should be separated by single space",
+                        "type": "string",
+                        "example": "12345 67890"
+                      },
+                      "msg": {
+                        "type": "string",
+                        "example": "64 character long message",
+                        "description": "test message, must be 64 ASCII char long"
+                      }
+                    },
+                    "required": [
+                      "X",
+                      "A",
+                      "msg"
+                    ]
+                  }
+                },
+                "required": [
+                  "protocol_name",
+                  "payload"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Does key exchange, return msg used for verification if keys are valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Y": {
+                      "description": "stringified integer value, multiple values should be separated by single space",
+                      "type": "string",
+                      "example": "12345 67890"
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "36oaV/Q6I1c3RAgCfGLCacQ4+9TKE26wS0AG9BiDIHZUKvRLuHD+Ud7JY+SIa1A/Zr+mlDgqYzaOfllWfOaSZw==",
+                      "description": "base64(sha3_512(K | msg))"
+                    }
+                  },
+                  "required": [
+                    "Y",
+                    "msg"
                   ]
                 }
               }

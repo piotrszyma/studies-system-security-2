@@ -22,16 +22,27 @@ router.post('/verify', asyncMiddleware(async (req, res, next) => {
     throw new Error("This endpoint accepts only 'gjss' protocol.");
   }
 
-  const hash = mcl.hashAndMapToG2(msg);
-  const sigma = mclUtils.tryDeserializeG2(serializedSigma);
-
+  const g = mclUtils.getGenG1();
   const A = mclUtils.tryDeserializeG1(serializedA);
-  const g1 = mclUtils.getGenG1();
+  const s = mclUtils.tryDeserializeFr(serializedS);
+  const c = mclUtils.tryDeserializeFr(serializedC);
+  const r = mclUtils.tryDeserializeFr(serializedR);
+  const z = mclUtils.tryDeserializeG1(serializedZ);
 
-  const e1 = mcl.pairing(g1, sigma);
-  const e2 = mcl.pairing(A, hash);
+  const h_prim = mcl.hashAndMapToG1(msg + r.getStr());
+  const u_prim = mcl.add(mcl.mul(g, s), mcl.mul(A, mcl.neg(c)));
+  const v_prim = mcl.add(mcl.mul(h_prim, s), mcl.mul(z, mcl.neg(c)));
 
-  const isValid = e1.getStr() === e2.getStr();
+  const c_prim = mclUtils.hashFr(
+    g.getStr(10).slice(2) +
+    h_prim.getStr(10).slice(2) +
+    A.getStr(10).slice(2) +
+    z.getStr(10).slice(2) +
+    u_prim.getStr(10).slice(2) +
+    v_prim.getStr(10).slice(2)
+  );
+
+  const isValid = c.getStr() == c_prim.getStr();
 
   if (isValid) {
     res.send({ verified: true });

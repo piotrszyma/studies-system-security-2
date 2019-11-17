@@ -3,6 +3,7 @@ const mcl = require('mcl-wasm');
 const config = require('../config');
 const mclUtils = require('../crypto/mcl-utils');
 const CONST_G1 = config.points.g1;
+const CONST_R = config.consts.r;
 
 async function protocolExecutionExample() {
   await mcl.init(mcl.BLS12_381);
@@ -10,51 +11,55 @@ async function protocolExecutionExample() {
   // Key Generation
   const x = new mcl.Fr();
   x.setByCSPRNG();
-  const g1 = mclUtils.getGenG1(); // G1
-  const X = mcl.mul(g1, x); // G1
+  const g = mclUtils.getGenG1(); // G1
+  const y = mcl.mul(g, x);
 
   // Sign
 
   const msg = 'test';
 
-  const k = new mcl.Fr();
-  k.setByCSPRNG();
+  // 1.
+  const randomR = (BigInt(`0x${randomBytes(128).toString("hex")}`) % BigInt(CONST_R));
+  const r = new mcl.Fr();
+  r.setStr(randomR.toString(16), 16);
 
-  const u = mcl.mul(g1, k);
-
-  const h = mcl.hashAndMapToG1(u.getStr(10));
-
+  // 2.
+  const h = mcl.hashAndMapToG1(msg + r.getStr());
   const z = mcl.mul(h, x);
 
+  // 3.
+  const k = new mcl.Fr();
+  k.setByCSPRNG();
+  const u = mcl.mul(g, k);
   const v = mcl.mul(h, k);
 
-  const c = mclUtils.hash(
-    msg +
-    g1.getStr(10).slice(2) +
+  // 4.
+  const c = mclUtils.hashFr(
+    g.getStr(10).slice(2) +
     h.getStr(10).slice(2) +
-    X.getStr(10).slice(2) +
+    y.getStr(10).slice(2) +
     z.getStr(10).slice(2) +
     u.getStr(10).slice(2) +
-    v.getStr(10).slice(2));
+    v.getStr(10).slice(2)
+  );
 
-  // How to perform add?
-  // const s = mcl.add(k, c + x)
+  const s = mcl.add(k, mcl.mul(c, x));
+  const signature = [z, r, s, c];
 
-  const signature = [z, s, c];
+  const h_prim = mcl.hashAndMapToG1(msg + r.getStr());
 
-  const u_prim = mcl.add(mcl.mul(g1, s), mcl.mul(X, mcl.add(-1, c)));
-  const h_prim = mcl.hashAndMapToG1(u_prim);
+  const u_prim = mcl.add(mcl.mul(g, s), mcl.mul(y, mcl.neg(c)));
 
-  const v_prim = mcl.add(mcl.mul(h_prim, s), mcl.mul(z, mcl.add(-1, c)));
+  const v_prim = mcl.add(mcl.mul(h_prim, s), mcl.mul(z, mcl.neg(c)));
 
-  const c_prim = mclUtils.hash(
-    msg +
-    g1.getStr(10).slice(2) +
+  const c_prim = mclUtils.hashFr(
+    g.getStr(10).slice(2) +
     h_prim.getStr(10).slice(2) +
-    X.getStr(10).slice(2) +
+    y.getStr(10).slice(2) +
     z.getStr(10).slice(2) +
     u_prim.getStr(10).slice(2) +
-    v_prim.getStr(10).slice(2));
+    v_prim.getStr(10).slice(2)
+  );
 
   if (c.getStr() == c_prim.getStr()) {
     console.log("Accepted");

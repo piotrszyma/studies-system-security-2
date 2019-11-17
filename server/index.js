@@ -30,8 +30,10 @@ app.use('/protocols/sss', require('./routes/sss'));
 app.use('/protocols/ois', require('./routes/ois'));
 app.use('/protocols/msis', require('./routes/msis'));
 app.use('/protocols/blsss', require('./routes/blsss'));
+app.use('/protocols/gjss', require('./routes/gjss'));
 
 app.use(function (error, req, res, next) {
+  console.log(error);
   res.status(404).json({ message: error.message });
 });
 

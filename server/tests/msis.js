@@ -11,7 +11,7 @@ const CONST_G1 = {
 const PORT = config.testedPort;
 const ADDRESS = config.testedAddress;
 
-const LOGGER = true;
+const LOGGER = false;
 
 async function performInitRequest(data) {
   try {

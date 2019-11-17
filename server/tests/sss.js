@@ -1,7 +1,7 @@
 const mcl = require('mcl-wasm');
 const axios = require('axios');
 const crypto = require('crypto');
-const mclUtils = require('../server/crypto/mcl-utils');
+const mclUtils = require('../crypto/mcl-utils');
 
 const config = require('../config');
 
@@ -18,6 +18,7 @@ async function performVerifyRequest(data) {
     const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sss/verify`, data);
     return response.data;
   } catch (error) {
+    console.log(error);
     return error.response.data;
   }
 }
@@ -53,14 +54,14 @@ async function testVerifiesValidMessage() {
   const ac = mcl.mul(a, c);
   const s = mcl.add(ac, x);
 
-  console.log('r', r);
-  console.log('x', mclUtils.serializeFr(x));
-  console.log('a', mclUtils.serializeFr(a));
-  console.log('X', mclUtils.serializeG1(X));
-  console.log('A', mclUtils.serializeG1(A));
-  console.log('msg', message);
-  console.log('h', intValue);
-  console.log('s', s.getStr(10));
+  // console.log('r', r);
+  // console.log('x', mclUtils.serializeFr(x));
+  // console.log('a', mclUtils.serializeFr(a));
+  // console.log('X', mclUtils.serializeG1(X));
+  // console.log('A', mclUtils.serializeG1(A));
+  // console.log('msg', message);
+  // console.log('h', intValue);
+  // console.log('s', s.getStr(10));
 
   const verifyData = await performVerifyRequest({
     'payload': {
@@ -72,7 +73,7 @@ async function testVerifiesValidMessage() {
     'protocol_name': 'sss',
   });
 
-  console.log(verifyData);
+  // console.log(verifyData);
 
   if (!verifyData.valid) {
     throw 'testVerifiesValidMessage failed'

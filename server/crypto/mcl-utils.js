@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const mcl = require('mcl-wasm');
 
-const config = require('../../config');
+const config = require('../config');
 
 function getGenG1() {
   const generator = new mcl.G1();

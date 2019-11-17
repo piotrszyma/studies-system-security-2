@@ -1,7 +1,6 @@
 const mcl = require('mcl-wasm');
 const { randomBytes } = require('crypto');
 const axios = require('axios');
-const crypto = require('crypto');
 
 const config = require('../config');
 

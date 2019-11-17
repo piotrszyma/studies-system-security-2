@@ -1,6 +1,6 @@
 const { randomBytes } = require('crypto');
 const mcl = require('mcl-wasm');
-const config = require('../../config');
+const config = require('../config');
 const mclUtils = require('../crypto/mcl-utils');
 const CONST_G1 = config.points.g1;
 const CONST_R = config.consts.r;

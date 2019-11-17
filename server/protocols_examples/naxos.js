@@ -25,7 +25,7 @@ async function protocolExecutionExample() {
   // Client generates and sends to server
   const X = mcl.mul(g1, mclUtils.hashFr(eskA + skA.getStr(10)));
 
-  // Server generates and sends to client in response
+  // Server generates and sends to client
   const Y = mcl.mul(g1, mclUtils.hashFr(eskB + skB.getStr(10)));
 
   // Requires: pubA, eskB, skB

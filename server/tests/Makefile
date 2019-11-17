@@ -1,5 +1,5 @@
 test:
-	# node blsss.js -- SKIPPED: TO BE IMPLEMENTED
+	node blsss.js
 	node gjss.js
 	node msis.js
 	# node naxos.js -- SKIPPED: TO BE IMPLEMENTED

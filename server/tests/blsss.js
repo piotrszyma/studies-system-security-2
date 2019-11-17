@@ -16,7 +16,7 @@ const CONST_R = config.consts.r;
 
 async function performVerifyRequest(data) {
   try {
-    const response = await axios.post(`http://${ADDRESS}:${PORT}/protocols/blsss/verify`, data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/blsss/verify`, data);
     return response.data;
   } catch (error) {
     return error.response.data;

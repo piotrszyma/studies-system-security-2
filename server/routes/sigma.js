@@ -7,7 +7,6 @@ const { asyncMiddleware } = require('../utils');
 
 router.post('/init', asyncMiddleware(async (req, res, next) => {
 
-
 }));
 
 router.post('/exchange', asyncMiddleware(async (req, res, next) => {

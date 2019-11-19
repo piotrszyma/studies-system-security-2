@@ -10,7 +10,6 @@ async function protocolExecutionExample() {
   // A - client
   // B - server
   await mcl.init(mcl.BLS12_381);
-  const securityParam = 111;
   const g1 = mclUtils.getGenG1();
 
   const skA = new mcl.Fr(); skA.setByCSPRNG(); // Client has his secret

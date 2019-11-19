@@ -91,6 +91,11 @@ function hash(value) {
   return intValue;
 }
 
+function hashHex(value) {
+  const hasher = crypto.createHash('sha3-512');
+  hasher.update(value);
+  return hasher.digest('hex');
+}
 
 module.exports = {
   tryDeserializeFr,
@@ -98,6 +103,7 @@ module.exports = {
   tryDeserializeG2,
   getGenG1,
   getGenG2,
+  hashHex,
   hashFr,
   hash,
   serializeFr,

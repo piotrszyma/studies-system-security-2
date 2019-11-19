@@ -1,6 +1,7 @@
 const mcl = require('mcl-wasm');
 const { randomBytes } = require('crypto');
 const axios = require('axios');
+const mclUtils = require('../crypto/mcl-utils');
 
 const config = require('../config');
 
@@ -39,7 +40,7 @@ async function performValidExchange() {
   const g = new mcl.G1();
   g.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
 
-  const pkeyData = await requestServerPublicKey();
+  const { payload: pkeyData } = await requestServerPublicKey();
   const pubB = new mcl.G1();
   pubB.setStr(`1 ${pkeyData.B}`);
 
@@ -48,24 +49,35 @@ async function performValidExchange() {
 
   const msg = 'test';
   const eskA = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
-  const X = mcl.mul(g, mclUtils.hashFr(eskB + skB.getStr(10)));
-
+  const X = mcl.mul(g, mclUtils.hashFr(eskA + skA.getStr(10)));
 
   const response = await requestKeyExchange({
-    X,
-    A: pubA,
-    msg,
+    payload: {
+      X: X.getStr().slice(2),
+      A: pubA.getStr().slice(2),
+      msg,
+    }
   })
 
-  const Y = new mcl.G1();
-  Y.setStr(`1 ${response.data.Y}`);
+  const Y = new mcl.G1(); Y.setStr(`1 ${response.payload.Y}`);
+  const serverHash = response.payload.msg;
 
-  const serverMsg = msg;
+  const clientKey = mclUtils.hash(
+    mcl.mul(Y, skA).getStr(10).slice(2) +
+    mcl.mul(pubB, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2) +
+    mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2)
+  );
 
+  // console.log('clientKey: ', clientKey);
+  const verificationHash = Buffer.from(mclUtils.hash(clientKey + msg)).toString('base64');
+
+  if (verificationHash !== serverHash) {
+    throw 'naxos exchange failed'
+  }
 }
 
 
-function main() {
+async function main() {
   await performValidExchange();
 }
 

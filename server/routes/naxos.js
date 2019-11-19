@@ -4,24 +4,18 @@ const mcl = require('mcl-wasm');
 const storage = require('../storage');
 const mclUtils = require('../crypto/mcl-utils');
 const { asyncMiddleware } = require('../utils');
+const { randomBytes } = require('crypto');
+const fs = require('fs');
 
 
-let skB = null;
-let pubB = null;
+let skBserialized = fs.readFileSync('cert/naxospriv.pem').toString();
+let pubBserialized = fs.readFileSync('cert/naxospub.pem').toString();
 
 
 router.post('/pkey', asyncMiddleware(async (req, res, next) => {
-  await mcl.init(mcl.BLS12_381);
-  const g = mclUtils.getGenG1();
-
-  if (!skB) {
-    skB = new mcl.Fr(); skB.setByCSPRNG();
-    pubB = mcl.mul(g, privKey);
-  }
-
   res.send({
     'payload': {
-      'B': mclUtils.serializeG1(pubB)
+      'B': pubBserialized
     }
   });
 }));
@@ -30,6 +24,8 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
   await mcl.init(mcl.BLS12_381);
   const g = mclUtils.getGenG1();
 
+  const skB = new mcl.Fr(); skB.setStr(skBserialized);
+  const pubB = new mcl.G1(); pubB.setStr(`1 ${pubBserialized}`);
 
   const {
     protocol_name: procotolName,
@@ -42,8 +38,8 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
 
   const eskB = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
 
-  const X = mclUtils.deserializeG1(serializedX);
-  const pubA = mclUtils.deserializeG1(serializedA);
+  const X = mclUtils.tryDeserializeG1(serializedX);
+  const pubA = mclUtils.tryDeserializeG1(serializedA);
 
   // Server generates and sends to client
   const Y = mcl.mul(g, mclUtils.hashFr(eskB + skB.getStr(10)));
@@ -54,7 +50,10 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
     mcl.mul(X, mclUtils.hashFr(eskB + skB.getStr(10))).getStr(10).slice(2)
   );
 
+  // console.log('serverKey: ', serverKey);
+
   const verificationHash = Buffer.from(mclUtils.hash(serverKey + msg)).toString('base64');
+
 
   res.send({
     'payload': {
@@ -62,9 +61,7 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
       'msg': verificationHash,
     }
   });
-
-
-
 }));
+
 
 module.exports = router;

@@ -31,6 +31,7 @@ app.use('/protocols/ois', require('./routes/ois'));
 app.use('/protocols/msis', require('./routes/msis'));
 app.use('/protocols/blsss', require('./routes/blsss'));
 app.use('/protocols/gjss', require('./routes/gjss'));
+app.use('/protocols/naxos', require('./routes/naxos'));
 
 app.use(function (error, req, res, next) {
   console.log(error);

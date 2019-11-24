@@ -1,11 +1,10 @@
 const mcl = require('mcl-wasm');
-const _sodium = require('libsodium-wrappers');
 const axios = require('axios');
 const crypto = require('crypto');
 const config = require('../../config');
 const fs = require('fs');
 
-const SODIUM_KEY = fs.readFileSync('../keys/salsa_key.bin');
+const CHACHA_KEY = fs.readFileSync('../keys/chacha_key.bin');
 
 const PORT = config.testedPort;
 const ADDRESS = config.testedAddress;
@@ -16,17 +15,16 @@ const CONST_G1 = {
 }
 
 async function performVerifyRequest(data) {
-  await _sodium.ready;
-  const sodium = _sodium;
 
   const msg = JSON.stringify(data);
-  let nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
-  let ciphertext = sodium.crypto_secretbox_easy(msg, nonce, SODIUM_KEY, "base64");
+  const nonce = crypto.randomBytes(12);
+  const cipherFactory = crypto.createCipheriv('chacha20-poly1305', CHACHA_KEY, nonce);
+  const cipher = cipherFactory.update(msg);
 
   try {
-    const response = await axios.post(`https://${ADDRESS}:${PORT}/salsa/protocols/sss/verify`, {
-      nonce: Buffer.from(nonce).toString('base64'),
-      ciphertext,
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/chacha/protocols/sss/verify`, {
+      nonce: nonce.toString('base64'),
+      ciphertext: cipher.toString('base64'),
     });
     return response.data;
   } catch (error) {
@@ -75,22 +73,14 @@ async function testVerifiesValidMessage() {
     'protocol_name': 'sss',
   });
 
+  const responseCiphertext = Buffer.from(verifyData.ciphertext, 'base64');
+  const responseNonce = Buffer.from(verifyData.nonce, 'base64');
 
 
-  // const { responseNonceb64: nonce, ciphertext: responseCiphertextb64 } = verifyData;
-
-
-  await _sodium.ready;
-  const sodium = _sodium;
-
-  const responseCiphertext = new Uint8Array(
-    Buffer.from(verifyData.ciphertext, 'base64'));
-  const responseNonce = new Uint8Array(Buffer.from(verifyData.nonce, 'base64'));
-
-  const decrypted = sodium.crypto_secretbox_open_easy(
-    responseCiphertext, responseNonce, SODIUM_KEY);
-
-  const data = JSON.parse(Buffer.from(decrypted).toString());
+  const decipherFactory = crypto.createDecipheriv(
+    'chacha20-poly1305', CHACHA_KEY, responseNonce);
+  const decrypted = decipherFactory.update(responseCiphertext);
+  const data = JSON.parse(decrypted.toString());
 
   if (!data.valid) {
     throw 'testVerifiesValidMessage failed'

@@ -7,3 +7,5 @@ test:
 	# node sigma.js -- SKIPPED: TO BE IMPLEMENTED
 	node sis.js
 	node sss.js
+	node salsa/sss.js
+	node chacha/sss.js

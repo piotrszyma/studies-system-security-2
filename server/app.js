@@ -30,6 +30,7 @@ app.use('/protocols/blsss', require('./routes/blsss'));
 app.use('/protocols/gjss', require('./routes/gjss'));
 app.use('/protocols/naxos', require('./routes/naxos'));
 app.use('/salsa/protocols', require('./routes/encryptions/salsa'));
+app.use('/chacha/protocols', require('./routes/encryptions/chacha'));
 
 app.use(function (error, req, res, next) {
   console.log(error);

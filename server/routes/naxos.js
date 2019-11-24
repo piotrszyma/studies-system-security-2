@@ -36,6 +36,10 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
     },
   } = req.body;
 
+  if (procotolName !== 'naxos') {
+    throw new Error("This endpoint accepts only 'naxos' protocol.");
+  }
+
   const eskB = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
 
   const X = mclUtils.tryDeserializeG1(serializedX);

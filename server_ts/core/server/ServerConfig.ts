@@ -1,21 +1,17 @@
-export default class ServerOptions {
-  private httpPort: number;
-  private httpsPort: number;
-
-  constructor(
-    httpPort: number,
-    httpsPort: number,
-
-  ) {
-    this.httpPort = httpPort;
-    this.httpsPort = httpsPort;
-  }
-
-  getHttpPort(): number {
-    return this.httpPort;
-  }
-
-  getHttpsPort(): number {
-    return this.httpsPort;
-  }
+interface Ports {
+  httpPort: number,
+  httpsPort: number,
 }
+
+interface SslKeys {
+  key: Buffer,
+  cert: Buffer,
+  ca: Buffer,
+}
+
+interface ServerConfig {
+  ports: Ports,
+  sslKeys: SslKeys,
+}
+
+export default ServerConfig;

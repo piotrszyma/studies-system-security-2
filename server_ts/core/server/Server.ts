@@ -11,19 +11,13 @@ export default class Server {
   config: ServerConfig;
 
   constructor(app: Application, config: ServerConfig) {
-    const options = <https.ServerOptions>{
-      key: fs.readFileSync('cert/privkey.pem'),
-      cert: fs.readFileSync('cert/cert.pem'),
-      ca: fs.readFileSync('cert/chain.pem'),
-    };
-
     this.httpServer = http.createServer(app);
-    this.httpsServer = https.createServer(options, app);
+    this.httpsServer = https.createServer(config.sslKeys, app);
     this.config = config;
   }
 
   run() {
-    this.httpServer.listen(this.config.getHttpPort());
-    this.httpsServer.listen(this.config.getHttpsPort());
+    this.httpServer.listen(this.config.ports.httpPort);
+    this.httpsServer.listen(this.config.ports.httpsPort);
   }
 }

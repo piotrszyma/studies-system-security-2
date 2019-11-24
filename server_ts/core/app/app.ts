@@ -21,16 +21,16 @@ app.use(morgan('combined'));
 //   validateResponses: false, // its broken
 // }).install(app);
 
-app.use('/protocols/', require('./routes/list'));
-app.use('/protocols/sis', require('./routes/sis'));
-app.use('/protocols/sss', require('./routes/sss'));
-app.use('/protocols/ois', require('./routes/ois'));
-app.use('/protocols/msis', require('./routes/msis'));
-app.use('/protocols/blsss', require('./routes/blsss'));
-app.use('/protocols/gjss', require('./routes/gjss'));
-app.use('/protocols/naxos', require('./routes/naxos'));
-app.use('/salsa/protocols', require('./routes/encryptions/salsa'));
-app.use('/chacha/protocols', require('./routes/encryptions/chacha'));
+// app.use('/protocols/', require('./routes/list'));
+// app.use('/protocols/sis', require('./routes/sis'));
+// app.use('/protocols/sss', require('./routes/sss'));
+// app.use('/protocols/ois', require('./routes/ois'));
+// app.use('/protocols/msis', require('./routes/msis'));
+// app.use('/protocols/blsss', require('./routes/blsss'));
+// app.use('/protocols/gjss', require('./routes/gjss'));
+// app.use('/protocols/naxos', require('./routes/naxos'));
+// app.use('/salsa/protocols', require('./routes/encryptions/salsa'));
+// app.use('/chacha/protocols', require('./routes/encryptions/chacha'));
 
 app.use(function (error, req, res, next) {
   console.log(error);

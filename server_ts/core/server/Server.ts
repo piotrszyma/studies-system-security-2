@@ -19,5 +19,6 @@ export default class Server {
   run() {
     this.httpServer.listen(this.config.ports.httpPort);
     this.httpsServer.listen(this.config.ports.httpsPort);
+    console.log('Serving on ports', this.config.ports)
   }
 }

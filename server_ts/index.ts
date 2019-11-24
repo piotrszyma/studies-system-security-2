@@ -15,4 +15,5 @@ const serverConfig = <ServerConfig>{
     ca: fs.readFileSync('cert/chain.pem'),
   }
 };
+
 new Server(app, serverConfig).run();

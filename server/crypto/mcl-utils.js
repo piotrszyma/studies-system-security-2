@@ -3,6 +3,12 @@ const mcl = require('mcl-wasm');
 
 const config = require('../config');
 
+function getRandomFr() {
+  const value = new mcl.Fr();
+  value.setByCSPRNG();
+  return value;
+}
+
 function getGenG1() {
   const generator = new mcl.G1();
   generator.setStr(`1 ${config.points.g1.x} ${config.points.g1.y}`);
@@ -97,15 +103,23 @@ function hashHex(value) {
   return hasher.digest('hex');
 }
 
+function mac(value, iv) {
+  const cipherFactory = crypto.createCipher('chacha20-poly1305', iv);
+  const cipher = cipherFactory.update(value);
+  return cipher.toString('base64');
+}
+
 module.exports = {
   tryDeserializeFr,
   tryDeserializeG1,
   tryDeserializeG2,
   getGenG1,
   getGenG2,
+  getRandomFr,
   hashHex,
   hashFr,
   hash,
+  mac,
   serializeFr,
   deserializeFr,
   serializeG1,

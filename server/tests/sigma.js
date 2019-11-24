@@ -15,9 +15,9 @@ const CONST_G1 = {
 
 const CONST_R = config.consts.r;
 
-async function requestServerPublicKey() {
+async function performInitRequest(data) {
   try {
-    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sigma/pkey`);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sigma/init`, data);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -40,40 +40,84 @@ async function performValidExchange() {
   const g = new mcl.G1();
   g.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
 
-  const { payload: pkeyData } = await requestServerPublicKey();
-  const pubB = new mcl.G1();
-  pubB.setStr(`1 ${pkeyData.B}`);
+  const x = new mcl.Fr();
+  x.setByCSPRNG();
 
-  const skA = new mcl.Fr(); skA.setByCSPRNG();
-  const pubA = mcl.mul(g, skA);
+  const X = mcl.mul(g, x);
+  const serializedX = X.getStr(10).slice(2);
 
-  const msg = 'test';
-  const eskA = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
-  const X = mcl.mul(g, mclUtils.hashFr(eskA + skA.getStr(10)));
-
-  const response = await requestKeyExchange({
-    payload: {
-      X: X.getStr().slice(2),
-      A: pubA.getStr().slice(2),
-      msg,
+  const initResponse = await performInitRequest({
+    'protocol_name': 'sigma',
+    'payload': {
+      X: serializedX,
     }
+  });
+
+  console.log(initResponse);
+
+  return;
+
+  const serverB = initResponse.data.B;
+  const serverY = initResponse.data.Y;
+  const serverBMac = initResponse.data.b_mac;
+  const signature = initResponse.data.sig;
+
+  const signatureA = signature.A;
+  const signatureS = signature.s;
+  const signatureMsg = signature.msg;
+  const sessionToken = initResponse.data.session_token;
+
+  const exchangeResponse = await performValidExchange({
+    'protocol_name': 'sigma',
+    'session_token': sessionToken,
+    'payload': {
+      'a_mac': null,
+      'A': null,
+      'msg': null,
+      'sig': {
+        'A': null,
+        's': null,
+        'msg': null,
+      }
+    },
   })
 
-  const Y = new mcl.G1(); Y.setStr(`1 ${response.payload.Y}`);
-  const serverHash = response.payload.msg;
+  const verificationMsg = exchangeResponse.data.msg;
 
-  const clientKey = mclUtils.hash(
-    mcl.mul(Y, skA).getStr(10).slice(2) +
-    mcl.mul(pubB, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2) +
-    mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2)
-  );
+  // const { payload: pkeyData } = await requestServerPublicKey();
+  // const pubB = new mcl.G1();
+  // pubB.setStr(`1 ${pkeyData.B}`);
 
-  // console.log('clientKey: ', clientKey);
-  const verificationHash = Buffer.from(mclUtils.hash(clientKey + msg)).toString('base64');
+  // const skA = new mcl.Fr(); skA.setByCSPRNG();
+  // const pubA = mcl.mul(g, skA);
 
-  if (verificationHash !== serverHash) {
-    throw 'sigma exchange failed'
-  }
+  // const msg = 'test';
+  // const eskA = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
+  // const X = mcl.mul(g, mclUtils.hashFr(eskA + skA.getStr(10)));
+
+  // const response = await requestKeyExchange({
+  //   payload: {
+  //     X: X.getStr().slice(2),
+  //     A: pubA.getStr().slice(2),
+  //     msg,
+  //   }
+  // })
+
+  // const Y = new mcl.G1(); Y.setStr(`1 ${response.payload.Y}`);
+  // const serverHash = response.payload.msg;
+
+  // const clientKey = mclUtils.hash(
+  //   mcl.mul(Y, skA).getStr(10).slice(2) +
+  //   mcl.mul(pubB, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2) +
+  //   mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2)
+  // );
+
+  // // console.log('clientKey: ', clientKey);
+  // const verificationHash = Buffer.from(mclUtils.hash(clientKey + msg)).toString('base64');
+
+  // if (verificationHash !== serverHash) {
+  //   throw 'sigma exchange failed'
+  // }
 }
 
 

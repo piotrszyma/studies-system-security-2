@@ -29,11 +29,12 @@ app.use('/protocols/msis', require('./routes/msis'));
 app.use('/protocols/blsss', require('./routes/blsss'));
 app.use('/protocols/gjss', require('./routes/gjss'));
 app.use('/protocols/naxos', require('./routes/naxos'));
+app.use('/protocols/sigma', require('./routes/sigma'));
 app.use('/salsa/protocols', require('./routes/encryptions/salsa'));
 app.use('/chacha/protocols', require('./routes/encryptions/chacha'));
 
 app.use(function (error, req, res, next) {
-  console.log(error);
+  // console.log(error);
   res.status(404).json({ message: error.message });
 });
 

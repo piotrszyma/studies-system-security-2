@@ -40,7 +40,14 @@ const testedData = {
   testedPort: config.ports.PSdomainHTTPS,
 };
 
+const serverConfig = {
+  httpPort: 8080,
+  httpsPort: testedData.testedPort,
+  address: testedData.testedAddress,
+};
+
 module.exports = {
   ...config,
   ...testedData,
+  serverConfig,
 }

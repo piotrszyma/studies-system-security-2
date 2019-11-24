@@ -2,7 +2,7 @@ test:
 	node blsss.js
 	node gjss.js
 	node msis.js
-	# node naxos.js -- SKIPPED: TO BE IMPLEMENTED
+	node naxos.js
 	node ois.js
 	# node sigma.js -- SKIPPED: TO BE IMPLEMENTED
 	node sis.js

@@ -19,19 +19,17 @@ async function performVerifyRequest(data) {
   await _sodium.ready;
   const sodium = _sodium;
 
-
-  // let res = sodium.crypto_secretstream_xchacha20poly1305_init_push(SODIUM_KEY);
-  let key = sodium.crypto_secretstream_xchacha20poly1305_keygen();
-  console.log(key.length);
-  console.log(SODIUM_KEY.length);
-  // let res = sodium.crypto_secretstream_xchacha20poly1305_init_push(key);
-  // let [state_out, header] = [res.state, res.header];
+  const msg = JSON.stringify(data);
+  let nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+  let ciphertext = sodium.crypto_secretbox_easy(msg, nonce, SODIUM_KEY, "base64");
 
   try {
-    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/sss/verify`, data);
+    const response = await axios.post(`https://${ADDRESS}:${PORT}/salsa/protocols/sss/verify`, {
+      nonce: Buffer.from(nonce).toString('base64'),
+      ciphertext,
+    });
     return response.data;
   } catch (error) {
-    console.log(error);
     return error.response.data;
   }
 }
@@ -77,9 +75,24 @@ async function testVerifiesValidMessage() {
     'protocol_name': 'sss',
   });
 
-  // console.log(verifyData);
 
-  if (!verifyData.valid) {
+
+  // const { responseNonceb64: nonce, ciphertext: responseCiphertextb64 } = verifyData;
+
+
+  await _sodium.ready;
+  const sodium = _sodium;
+
+  const responseCiphertext = new Uint8Array(
+    Buffer.from(verifyData.ciphertext, 'base64'));
+  const responseNonce = new Uint8Array(Buffer.from(verifyData.nonce, 'base64'));
+
+  const decrypted = sodium.crypto_secretbox_open_easy(
+    responseCiphertext, responseNonce, SODIUM_KEY);
+
+  const data = JSON.parse(Buffer.from(decrypted).toString());
+
+  if (!data.valid) {
     throw 'testVerifiesValidMessage failed'
   }
 }

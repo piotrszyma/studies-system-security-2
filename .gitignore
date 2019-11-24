@@ -1,3 +1,4 @@
 main
 lib/
 node_modules/
+db.sqlite

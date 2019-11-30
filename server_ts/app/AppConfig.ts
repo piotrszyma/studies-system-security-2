@@ -9,9 +9,10 @@ interface SslKeys {
   ca: Buffer,
 }
 
-interface ServerConfig {
+interface AppConfig {
   ports: Ports,
   sslKeys: SslKeys,
+  domain: string,
 }
 
-export default ServerConfig;
+export default AppConfig;

@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 
-import Server from "./core/server/Server";
-import ServerConfig from "./core/server/ServerConfig";
-import app from "./core/app/app";
+import AppConfig from './app/AppConfig';
+import AppServer from './app/AppServer';
+import App from './app/App';
 
-const serverConfig = <ServerConfig>{
+const config = <AppConfig>{
   ports: {
     httpPort: 8080,
     httpsPort: 8443,
@@ -13,7 +13,8 @@ const serverConfig = <ServerConfig>{
     key: fs.readFileSync('cert/privkey.pem'),
     cert: fs.readFileSync('cert/cert.pem'),
     ca: fs.readFileSync('cert/chain.pem'),
-  }
+  },
+  domain: 'localhost',
 };
 
-new Server(app, serverConfig).run();
+new AppServer(new App(), config).run();

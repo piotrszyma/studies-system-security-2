@@ -1,11 +1,24 @@
-import { SchemeName, Scheme } from './Scheme';
+import { SchemeName, SchemeMethod, SchemeMethodName } from './Scheme';
+import BaseScheme from './BaseScheme';
 
-class SchemeResolver {
-  private registeredSchemes: Map<SchemeName, Scheme>;
+export default class SchemeResolver {
+  private registeredSchemes: Map<SchemeName, BaseScheme>;
 
-  resolve(schemeName: string, phase: string): Scheme {
-    return this.registeredSchemes.get(schemeName);
+  constructor() {
+    this.registeredSchemes = new Map();
   }
 
-  register() { }
+  getMethodFor(schemeName: SchemeName, methodName: SchemeMethodName): SchemeMethod {
+    const scheme = <BaseScheme>this.registeredSchemes.get(schemeName);
+    if (!scheme) throw new Error(`Scheme ${schemeName} is not supported`);
+    return scheme.getMethod(methodName);
+  }
+
+  register(scheme: BaseScheme) {
+    this.registeredSchemes.set(scheme.getName(), scheme);
+  }
+
+  getRegistedSchemeNames(): Array<SchemeName> {
+    return [...this.registeredSchemes.keys()];
+  }
 }

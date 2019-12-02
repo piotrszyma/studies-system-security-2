@@ -8,10 +8,10 @@ export default class SchemeResolver {
     this.registeredSchemes = new Map();
   }
 
-  getMethodFor(schemeName: SchemeName, methodName: SchemeMethodName): SchemeMethod {
+  getScheme(schemeName: SchemeName) {
     const scheme = <BaseScheme>this.registeredSchemes.get(schemeName);
     if (!scheme) throw new Error(`Scheme ${schemeName} is not supported`);
-    return scheme.getMethod(methodName);
+    return scheme;
   }
 
   register(scheme: BaseScheme) {

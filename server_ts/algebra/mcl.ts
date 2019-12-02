@@ -16,4 +16,6 @@ export default {
   getFr: () => new mclInstance.Fr(),
   getG1: () => new mclInstance.G1(),
   getG2: () => new mclInstance.G2(),
+  getMul: () => mclInstance.mul,
+  getAdd: () => mclInstance.add,
 }

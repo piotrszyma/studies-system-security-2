@@ -15,7 +15,7 @@ export default class Fr implements MclValueWrapper<Fr> {
     const mclValue = mcl.getFr();
 
     if (value) {
-      mclValue.setStr(value);
+      mclValue.setStr(`1 ${value}`);
     } else {
       mclValue.setByCSPRNG();
     }
@@ -31,12 +31,12 @@ export default class Fr implements MclValueWrapper<Fr> {
   }
 
   add(value: Fr): Fr {
-    const result = this.mclValue.add(value.mcl());
+    const result = mcl.getAdd()(this.mclValue, value.mcl());
     return new Fr(serializeFr(result));
   }
 
   mul(value: Fr): Fr {
-    const result = this.mclValue.mul(value.mcl());
+    const result = mcl.getMul()(this.mclValue, value.mcl());
     return new Fr(serializeFr(result));
   }
 

@@ -2,6 +2,7 @@ import IdentificationScheme from "./IdentificationScheme";
 import { SchemeName, SchemeMethod, SchemeMethodName } from "../Scheme";
 import Fr from "../../algebra/Fr";
 import G1 from "../../algebra/G1";
+import { createSession, getSessionByToken } from "../../storage/storage";
 
 
 export default class SchnorrIdentificationScheme extends IdentificationScheme {
@@ -25,16 +26,46 @@ export default class SchnorrIdentificationScheme extends IdentificationScheme {
     new G1(params['payload']['X']);
     new G1(params['payload']['A']);
     const c = new Fr().random().serialize();
+    const sessionToken = await createSession({
+      'X': params['payload']['X'],
+      'A': params['payload']['A'],
+      'c': c,
+    })
     return {
-      'session_token': '1234',
+      'session_token': sessionToken,
       'payload': {
         'c': c,
       }
     };
   }
 
-  verify(params: Object): Object {
-    return {};
+  async verify(params: Object): Promise<Object> {
+    const sessionToken = params['session_token'];
+    const sessionParams = await getSessionByToken(sessionToken);
+
+    console.log(sessionParams);
+
+    const s = new Fr(params['payload']['s']);
+    const c = new Fr(sessionParams['c']);
+    const X = new G1(sessionParams['X']);
+    const A = new G1(sessionParams['A']);
+    const g = new G1().gen();
+
+    const gs = g.mul(s);
+    const Ac = A.mul(c);
+    const XAc = X.add(Ac);
+
+    console.log('X', X.mcl().getStr(10));
+    console.log('A', A.mcl().getStr(10));
+    console.log('c', c.mcl().getStr(10));
+    console.log('g', g.mcl().getStr(10));
+    console.log('gs', gs.mcl().getStr(10));
+    console.log('Ac', Ac.mcl().getStr(10));
+    console.log('XAc', XAc.mcl().getStr(10));
+
+    return {
+      verified: XAc.mcl().getStr(10) == gs.mcl().getStr(10),
+    };
   }
 
 }

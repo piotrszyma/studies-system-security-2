@@ -9,9 +9,9 @@ const resolver = new SchemeResolver();
 resolver.register(new SchnorrIdentificationScheme());
 
 router.post('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
-  const { schemeName, schemeMethod, ...requestParams } = request.params;
-  console.log('Called method', schemeMethod, 'of', schemeName, 'with params', request.params);
-  const schemeResult = await resolver.getMethodFor(schemeName, schemeMethod)(requestParams);
+  const { schemeName, schemeMethod } = request.params;
+  console.log(request.body);
+  const schemeResult = await resolver.getMethodFor(schemeName, schemeMethod)(request.body);
   response.send(schemeResult);
 }));
 

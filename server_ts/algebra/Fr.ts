@@ -1,5 +1,9 @@
-import * as mcl from 'mcl-wasm';
 import MclValueWrapper from './MclValueWrapper';
+import mcl from './mcl';
+
+function serializeFr(value): string {
+  return value.getStr(10);
+}
 
 export default class Fr implements MclValueWrapper<Fr> {
 
@@ -8,34 +12,35 @@ export default class Fr implements MclValueWrapper<Fr> {
   constructor();
   constructor(value: string);
   constructor(value: string = undefined) {
-    const mclValue = new mcl.Fr();
-    if (typeof value === 'undefined') {
-      mclValue.setByCPRNG();
-    } else {
+    const mclValue = mcl.getFr();
+
+    if (value) {
       mclValue.setStr(value);
+    } else {
+      mclValue.setByCSPRNG();
     }
     this.mclValue = mclValue;
   }
 
-  deserialize(value: string) {
-    return new Fr(value);
+  deserialize(serializedValue: string): Fr {
+    return new Fr(serializedValue);
   }
 
-  serialize() {
-    return this.mclValue.getStr(10);
+  serialize(): string {
+    return serializeFr(this.mclValue);
   }
 
   add(value: Fr): Fr {
-    const result = this.mclValue.add(value.getMclValue());
-    return new Fr(result.getStr(10));
+    const result = this.mclValue.add(value.mcl());
+    return new Fr(serializeFr(result));
   }
 
   mul(value: Fr): Fr {
-    const result = this.mclValue.mul(value.getMclValue());
-    return new Fr(result.getStr(10));
+    const result = this.mclValue.mul(value.mcl());
+    return new Fr(serializeFr(result));
   }
 
-  getMclValue() {
+  mcl() {
     return this.mclValue;
   }
 

@@ -48,7 +48,7 @@ async function testVerifiesValidMessage() {
     'protocol_name': 'blsss',
   });
 
-  if (!verifyData.verified) {
+  if (!verifyData.valid) {
     throw 'testVerifiesValidMessage failed'
   }
 }

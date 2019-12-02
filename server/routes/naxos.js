@@ -12,11 +12,9 @@ let skBserialized = fs.readFileSync('cert/naxospriv.pem').toString();
 let pubBserialized = fs.readFileSync('cert/naxospub.pem').toString();
 
 
-router.post('/pkey', asyncMiddleware(async (req, res, next) => {
+router.get('/pkey', asyncMiddleware(async (req, res, next) => {
   res.send({
-    'payload': {
-      'B': pubBserialized
-    }
+    'B': pubBserialized
   });
 }));
 
@@ -40,7 +38,8 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
     throw new Error("This endpoint accepts only 'naxos' protocol.");
   }
 
-  const eskB = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
+  // const eskB = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
+  const eskB = Array.from({ length: 111 }).map(_ => (~~(Math.random() * 10)) % 2).join('')
 
   const X = mclUtils.tryDeserializeG1(serializedX);
   const pubA = mclUtils.tryDeserializeG1(serializedA);
@@ -60,10 +59,8 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
 
 
   res.send({
-    'payload': {
-      'Y': mclUtils.serializeG1(Y),
-      'msg': verificationHash,
-    }
+    'Y': mclUtils.serializeG1(Y),
+    'msg': verificationHash,
   });
 }));
 

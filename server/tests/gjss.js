@@ -36,6 +36,7 @@ async function testVerifiesValidMessage() {
   const msg = 'message';
 
   // 1.
+  // TODO(szyma): Use binary format...
   const randomR = (BigInt(`0x${randomBytes(128).toString("hex")}`) % BigInt(CONST_R));
   const r = new mcl.Fr();
   r.setStr(randomR.toString(16), 16);

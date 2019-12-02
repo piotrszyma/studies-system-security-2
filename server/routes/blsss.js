@@ -29,9 +29,9 @@ router.post('/verify', asyncMiddleware(async (req, res, next) => {
   const isValid = e1.getStr() === e2.getStr();
 
   if (isValid) {
-    res.send({ verified: true });
+    res.send({ valid: true });
   } else {
-    res.status(403).send({ verified: false });
+    res.status(403).send({ valid: false });
   }
 }));
 

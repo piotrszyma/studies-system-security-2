@@ -17,7 +17,7 @@ const CONST_R = config.consts.r;
 
 async function requestServerPublicKey() {
   try {
-    const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/naxos/pkey`);
+    const response = await axios.get(`https://${ADDRESS}:${PORT}/protocols/naxos/pkey`);
     return response.data;
   } catch (error) {
     return error.response.data;
@@ -40,15 +40,19 @@ async function performValidExchange() {
   const g = new mcl.G1();
   g.setStr(`1 ${CONST_G1.x} ${CONST_G1.y}`);
 
-  const { payload: pkeyData } = await requestServerPublicKey();
+  const pubKey = await requestServerPublicKey();
   const pubB = new mcl.G1();
-  pubB.setStr(`1 ${pkeyData.B}`);
+  pubB.setStr(`1 ${pubKey.B}`);
 
   const skA = new mcl.Fr(); skA.setByCSPRNG();
   const pubA = mcl.mul(g, skA);
 
   const msg = 'test';
-  const eskA = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
+
+  // const eskA = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
+
+  const eskA = Array.from({ length: 111 }).map(_ => (~~(Math.random() * 10)) % 2).join('')
+
   const X = mcl.mul(g, mclUtils.hashFr(eskA + skA.getStr(10)));
 
   const response = await requestKeyExchange({
@@ -56,11 +60,14 @@ async function performValidExchange() {
       X: X.getStr().slice(2),
       A: pubA.getStr().slice(2),
       msg,
-    }
+    },
+    protocol_name: 'naxos'
   })
 
-  const Y = new mcl.G1(); Y.setStr(`1 ${response.payload.Y}`);
-  const serverHash = response.payload.msg;
+  // console.log(response);
+
+  const Y = new mcl.G1(); Y.setStr(`1 ${response.Y}`);
+  const serverHash = response.msg;
 
   const clientKey = mclUtils.hash(
     mcl.mul(Y, skA).getStr(10).slice(2) +

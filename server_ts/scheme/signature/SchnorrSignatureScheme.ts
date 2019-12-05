@@ -2,7 +2,7 @@ import SignatureScheme from "./SignatureScheme";
 import { SchemeName } from "../Scheme";
 import Fr from "../../algebra/Fr";
 import G1 from "../../algebra/G1";
-import { stringifiedIntHashOf } from "../../crypto/hashers";
+import { stringifiedIntHashOf } from "../../crypto/hash";
 
 export default class SchnorrSignatureScheme extends SignatureScheme {
   getName(): SchemeName {

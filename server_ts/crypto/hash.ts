@@ -15,8 +15,8 @@ export function stringifiedIntHashOf(value: string): string {
   return stringifiedIntValue;
 }
 
-export function hashOf(value: string) {
-  const hasher = crypto.createHash('sha3-256');
+export function hashOf(value: string, mode = 'sha3-256') {
+  const hasher = crypto.createHash(mode);
   hasher.update(value);
   return hasher.digest();
 }

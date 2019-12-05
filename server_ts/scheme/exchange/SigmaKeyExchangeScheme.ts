@@ -3,10 +3,11 @@ import BaseScheme from "../BaseScheme";
 import { SchemeMethodName } from "../Scheme";
 import G1 from "../../algebra/G1";
 import Fr from "../../algebra/Fr";
-import { hashOf, stringifiedIntHashOf } from "../../crypto/hashers";
-import { poly1305mac } from "../../crypto/mackers";
+import { hashOf, stringifiedIntHashOf } from "../../crypto/hash";
+import { poly1305mac } from "../../crypto/mac";
 import { serializedSigmaPrivKey, serializedSigmaPubKey } from "../../keys/sigma";
-import { createSession } from '../../storage/storage';
+import { createSession, getSessionByToken } from '../../storage/storage';
+import SchnorrSignatureScheme from '../signature/SchnorrSignatureScheme';
 
 function sign(msg: string, serializedPrivateKey): { s: Fr, X: G1 } {
   const a = new Fr(serializedPrivateKey);
@@ -79,6 +80,32 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
   }
 
   async exchange(params: Object): Promise<Object> {
-    return {};
+    const macOfA = params['payload']['a_mac'];
+    const A = new G1(params['payload']['A']);
+    const msg = params['payload']['msg'];
+    const sessionToken = params['session_token'];
+    const signature = params['payload']['sig'];
+
+    const signatureScheme = new SchnorrSignatureScheme();
+    const response = await signatureScheme.verify({
+      X: signature['A'],
+      A: A.serialize(),
+      s: signature['s'],
+      msg: signature['msg'],
+    })
+
+    if (!response['valid']) throw Error("Signature is not valid");
+
+    const sessionParams = await getSessionByToken(sessionToken);
+    const X = new G1(sessionParams['X']);
+    const Y = new G1(sessionParams['Y']);
+    const y = new Fr(sessionParams['y']);
+
+
+    const sessionKey = hashOf(`session_${X.mul(y).serialize()}`);
+    const hashOfMsg = hashOf(sessionKey + msg, 'sha3-512');
+    return {
+      'msg': hashOfMsg.toString('base64')
+    };
   }
 }

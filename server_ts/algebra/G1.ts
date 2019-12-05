@@ -69,4 +69,8 @@ export default class G1 {
     const result = mcl.getHashMapG1()(value);
     return new G2(serializeG1(result));
   }
+
+  equals(value: G1): boolean {
+    return this.mcl().getStr() === value.mcl().getStr();
+  }
 }

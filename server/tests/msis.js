@@ -68,11 +68,7 @@ async function testPerformValidCommitment() {
   // Client receives c, calculates S, gHat and sends S to server.
   const gHat = mcl.hashAndMapToG2(X.getStr(10).slice(2) + c.getStr(10));
 
-  console.log('gHat', gHat.getStr(10));
-
   const S = mcl.mul(gHat, mcl.add(x, mcl.mul(a, c)));
-
-  console.log(S);
 
   const verifyResponseData = await performVerifyRequest({
     "protocol_name": "msis",

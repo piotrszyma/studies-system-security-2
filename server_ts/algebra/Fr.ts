@@ -44,7 +44,17 @@ export default class Fr {
     return this.mclValue;
   }
 
+  setMcl(value) {
+    this.mclValue = value;
+  }
+
   random(): Fr {
     return new Fr();
+  }
+
+  fromHash(hash: string): Fr {
+    const result = new Fr();
+    result.mcl().setStr(hash);
+    return result;
   }
 }

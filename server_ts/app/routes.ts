@@ -6,12 +6,17 @@ import { asyncMiddleware } from './utils';
 import * as process from 'process';
 import { SchemeName } from '../scheme/Scheme';
 import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrIdentificationScheme';
+import SchnorrSignatureScheme from '../scheme/signature/SchnorrSignatureScheme';
 
 const router = express.Router();
 const resolver = new SchemeResolver();
+// Identification schemes.
 resolver.register(new SchnorrIdentificationScheme());
 resolver.register(new OkamotoIdentificationScheme());
 resolver.register(new ModSchnorrIdentificationScheme());
+
+// Signature schemes.
+resolver.register(new SchnorrSignatureScheme());
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];

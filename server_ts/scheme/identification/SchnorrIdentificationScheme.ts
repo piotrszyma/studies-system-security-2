@@ -26,7 +26,7 @@ export default class SchnorrIdentificationScheme extends IdentificationScheme {
     const XAc = X.add(Ac);
 
     return {
-      verified: XAc.mcl().getStr(10) == gs.mcl().getStr(10),
+      verified: XAc.equals(gs),
     };
   }
 

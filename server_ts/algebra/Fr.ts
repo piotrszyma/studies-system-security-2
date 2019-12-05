@@ -5,7 +5,7 @@ function serializeFr(value): string {
   return value.getStr(10);
 }
 
-export default class Fr implements MclValueWrapper<Fr> {
+export default class Fr {
 
   private mclValue: any;
 

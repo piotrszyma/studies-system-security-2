@@ -60,7 +60,13 @@ export default class G1 {
     return new G1(/* DO NOT PUT 1 HERE */`${GEN_G2.x} ${GEN_G2.y}`);
   }
 
+  // TODO: Create a wrapper for it.
   pairing(value: G2): any {
     return mcl.getPairing()(this.mcl(), value.mcl());
+  }
+
+  hashAndMapTo(value: string) {
+    const result = mcl.getHashMapG1()(value);
+    return new G2(serializeG1(result));
   }
 }

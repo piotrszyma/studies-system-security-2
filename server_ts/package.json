@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "serve": "tsc && node dist/index.js",
-    "tsc": "find . -name '*.ts' -not -path './node_modules/*' | entr tsc",
+    "tsc": "date; echo  'RESULTS: '; find . -name '*.ts' -not -path './node_modules/*' | entr tsc",
     "debug": "nodemon --inspect dist/index.js"
   },
   "author": "",

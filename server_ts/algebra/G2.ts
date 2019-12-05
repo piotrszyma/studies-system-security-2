@@ -28,7 +28,7 @@ export default class G2 {
     return serializeG2(this.mclValue);
   }
 
-  add(value: G1 | G2): G2 {
+  add(value: G2): G2 {
     const result = this.mclValue.add(value.mcl());
     return new G2(serializeG2(result));
   }

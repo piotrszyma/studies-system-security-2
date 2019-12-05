@@ -23,9 +23,10 @@ export default class ModSchnorrIdentificationScheme extends IdentificationScheme
     const A = new G1(sessionParams['A']);
     const g = new G1().getG1();
 
-    const s = new G2(params['payload']['s']);
+    const s = new G2(params['payload']['S']);
 
     const gHat = new G2().hashAndMapTo(X.serialize() + c.serialize());
+
     const Ac = A.mul(c);
     const XAc = X.add(Ac);
 
@@ -36,5 +37,4 @@ export default class ModSchnorrIdentificationScheme extends IdentificationScheme
       verified: e1.getStr() === e2.getStr(),
     };
   }
-
 }

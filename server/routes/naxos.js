@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
 const mcl = require('mcl-wasm');
 const storage = require('../storage');
@@ -25,7 +26,7 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
   const skB = new mcl.Fr(); skB.setStr(skBserialized);
   const pubB = new mcl.G1(); pubB.setStr(`1 ${pubBserialized}`);
 
-  const {
+  let {
     protocol_name: procotolName,
     payload: {
       X: serializedX,
@@ -39,7 +40,7 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
   }
 
   // const eskB = (BigInt(`0x${randomBytes(~~(111 / 8) + 1).toString("hex")}`)).toString(10); // Server returns to client in response
-  const eskB = Array.from({ length: 111 }).map(_ => (~~(Math.random() * 10)) % 2).join('')
+  const eskB = Array.from({ length: 512 }).map(_ => (~~(Math.random() * 10)) % 2).join('')
 
   const X = mclUtils.tryDeserializeG1(serializedX);
   const pubA = mclUtils.tryDeserializeG1(serializedA);
@@ -47,20 +48,32 @@ router.post('/exchange', asyncMiddleware(async (req, res, next) => {
   // Server generates and sends to client
   const Y = mcl.mul(g, mclUtils.hashFr(eskB + skB.getStr(10)));
 
-  const serverKey = mclUtils.hash(
-    mcl.mul(pubA, mclUtils.hashFr(eskB + skB.getStr(10))).getStr(10).slice(2) +
-    mcl.mul(X, skB).getStr(10).slice(2) +
-    mcl.mul(X, mclUtils.hashFr(eskB + skB.getStr(10))).getStr(10).slice(2)
-  );
+  const hasher = crypto.createHash('sha3-512');
 
-  // console.log('serverKey: ', serverKey);
+  const pkAH = mcl.mul(pubA, mclUtils.hashFr(eskB + skB.getStr(10))).getStr(10).slice(2);
+  const Xskb = mcl.mul(X, skB).getStr(10).slice(2);
+  const XH = mcl.mul(X, mclUtils.hashFr(eskB + skB.getStr(10))).getStr(10).slice(2);
 
-  const verificationHash = Buffer.from(mclUtils.hash(serverKey + msg)).toString('base64');
+  const serverKey = hasher.update(
+    pkAH +
+    Xskb +
+    XH +
+    serializedA +
+    pubBserialized
+  ).digest();
 
+  msg = new Uint8Array(Buffer.from(msg));
+
+  const hashWithMsg = new Uint8Array(serverKey.length + msg.length);
+  hashWithMsg.set(serverKey);
+  hashWithMsg.set(msg, serverKey.length);
+
+  const msgHash = crypto.createHash('sha3-512');
+  const hashOfMsg = msgHash.update(hashWithMsg).digest('base64');
 
   res.send({
     'Y': mclUtils.serializeG1(Y),
-    'msg': verificationHash,
+    'msg': hashOfMsg,
   });
 }));
 

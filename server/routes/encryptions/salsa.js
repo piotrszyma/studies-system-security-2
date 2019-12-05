@@ -10,7 +10,7 @@ const config = require('../../config');
 const ADDRESS = config.serverConfig.address;
 const PORT = config.serverConfig.httpsPort;
 
-router.post('*', asyncMiddleware(async (req, res, next) => {
+router.all('*', asyncMiddleware(async (req, res, next) => {
   await _sodium.ready;
   const sodium = _sodium;
   const { ciphertext: ciphertextb64, nonce: nonceb64 } = req.body;

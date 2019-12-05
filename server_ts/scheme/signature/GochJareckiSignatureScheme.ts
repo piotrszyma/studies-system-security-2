@@ -1,9 +1,8 @@
 import SignatureScheme from "./SignatureScheme";
 import { SchemeName } from "../Scheme";
 import G1 from "../../algebra/G1";
-import G2 from "../../algebra/G2";
 import Fr from "../../algebra/Fr";
-import { hashOf } from "../../crypto/crypto";
+import { stringifiedIntHashOf } from "../../crypto/hashers";
 
 export default class GochJareckiSignatureScheme extends SignatureScheme {
   getName(): SchemeName {
@@ -23,7 +22,7 @@ export default class GochJareckiSignatureScheme extends SignatureScheme {
     const uPrim = g.mul(s).add(A.mul(c.neg()));
     const vPrim = hPrim.mul(s).add(z.mul(c.neg()));
 
-    const cPrim = new Fr().fromHash(hashOf(
+    const cPrim = new Fr().fromHash(stringifiedIntHashOf(
       g.serialize() +
       hPrim.serialize() +
       A.serialize() +

@@ -38,6 +38,16 @@ router.post('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (reque
   response.send(responseBody);
 }));
 
+
+router.get('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
+  const { schemeName, schemeMethod } = request.params;
+  const scheme = resolver.getScheme(schemeName);
+  // TODO: Add differentiation between those two.
+  const responseBody = await scheme.getMethod(schemeMethod)(null);
+  console.log(responseBody);
+  response.send(responseBody);
+}));
+
 router.post('/protocols', (request, response) => {
   response.send(resolver.getRegistedSchemeNames());
 });

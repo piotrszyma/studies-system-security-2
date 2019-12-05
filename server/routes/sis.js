@@ -23,7 +23,6 @@ router.post('/init', asyncMiddleware(async (req, res, next) => {
   c.setByCSPRNG();
 
   const serializedC = mclUtils.serializeFr(c);
-  zx
   const session = await storage.createSession({
     serializedA: serializedA,
     serializedX: serializedX,

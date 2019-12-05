@@ -7,6 +7,7 @@ import { SchemeName } from '../scheme/Scheme';
 import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrIdentificationScheme';
 import SchnorrSignatureScheme from '../scheme/signature/SchnorrSignatureScheme';
 import BLSSignatureScheme from '../scheme/signature/BLSSignatureScheme';
+import GochJareckiSignatureScheme from '../scheme/signature/GochJareckiSignatureScheme';
 
 const router = express.Router();
 const resolver = new SchemeResolver();
@@ -18,6 +19,7 @@ resolver.register(new ModSchnorrIdentificationScheme());
 // Signature schemes.
 resolver.register(new SchnorrSignatureScheme());
 resolver.register(new BLSSignatureScheme());
+resolver.register(new GochJareckiSignatureScheme());
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];

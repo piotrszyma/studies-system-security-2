@@ -21,4 +21,5 @@ export default {
   getHashMapG1: () => mclInstance.hashAndMapToG1,
   getHashMapG2: () => mclInstance.hashAndMapToG2,
   getPairing: () => mclInstance.pairing,
+  getNeg: () => mclInstance.neg,
 }

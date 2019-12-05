@@ -52,6 +52,10 @@ export default class G1 {
     return this.mclValue;
   }
 
+  setMcl(value) {
+    this.mclValue = value;
+  }
+
   getG1() {
     return new G1(/* DO NOT PUT 1 HERE */`${GEN_G1.x} ${GEN_G1.y}`);
   }
@@ -67,10 +71,16 @@ export default class G1 {
 
   hashAndMapTo(value: string) {
     const result = mcl.getHashMapG1()(value);
-    return new G2(serializeG1(result));
+    return new G1(serializeG1(result));
   }
 
   equals(value: G1): boolean {
     return this.mcl().getStr() === value.mcl().getStr();
+  }
+
+  neg() {
+    const result = new G1();
+    result.setMcl(mcl.getNeg()(this.mcl()));
+    return result;
   }
 }

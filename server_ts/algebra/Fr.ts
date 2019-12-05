@@ -57,4 +57,14 @@ export default class Fr {
     result.mcl().setStr(hash);
     return result;
   }
+
+  neg() {
+    const result = new Fr();
+    result.setMcl(mcl.getNeg()(this.mcl()));
+    return result;
+  }
+
+  equals(value: Fr): boolean {
+    return this.mcl().getStr() === value.mcl().getStr();
+  }
 }

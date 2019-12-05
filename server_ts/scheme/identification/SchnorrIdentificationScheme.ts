@@ -25,6 +25,7 @@ export default class SchnorrIdentificationScheme extends IdentificationScheme {
   async init(params: Object): Promise<Object> {
     new G1(params['payload']['X']);
     new G1(params['payload']['A']);
+
     const c = new Fr().random().serialize();
     const sessionToken = await createSession({
       'X': params['payload']['X'],
@@ -43,8 +44,6 @@ export default class SchnorrIdentificationScheme extends IdentificationScheme {
     const sessionToken = params['session_token'];
     const sessionParams = await getSessionByToken(sessionToken);
 
-    console.log(sessionParams);
-
     const s = new Fr(params['payload']['s']);
     const c = new Fr(sessionParams['c']);
     const X = new G1(sessionParams['X']);
@@ -54,14 +53,6 @@ export default class SchnorrIdentificationScheme extends IdentificationScheme {
     const gs = g.mul(s);
     const Ac = A.mul(c);
     const XAc = X.add(Ac);
-
-    console.log('X', X.mcl().getStr(10));
-    console.log('A', A.mcl().getStr(10));
-    console.log('c', c.mcl().getStr(10));
-    console.log('g', g.mcl().getStr(10));
-    console.log('gs', gs.mcl().getStr(10));
-    console.log('Ac', Ac.mcl().getStr(10));
-    console.log('XAc', XAc.mcl().getStr(10));
 
     return {
       verified: XAc.mcl().getStr(10) == gs.mcl().getStr(10),

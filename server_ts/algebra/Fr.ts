@@ -15,7 +15,7 @@ export default class Fr implements MclValueWrapper<Fr> {
     const mclValue = mcl.getFr();
 
     if (value) {
-      mclValue.setStr(`1 ${value}`);
+      mclValue.setStr(`${value}`);
     } else {
       mclValue.setByCSPRNG();
     }

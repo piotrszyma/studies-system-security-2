@@ -3,10 +3,10 @@ import SchemeResolver from '../scheme/SchemeResolver';
 import SchnorrIdentificationScheme from '../scheme/identification/SchnorrIdentificationScheme';
 import OkamotoIdentificationScheme from '../scheme/identification/OkamotoIdentificationScheme';
 import { asyncMiddleware } from './utils';
-import * as process from 'process';
 import { SchemeName } from '../scheme/Scheme';
 import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrIdentificationScheme';
 import SchnorrSignatureScheme from '../scheme/signature/SchnorrSignatureScheme';
+import BLSSignatureScheme from '../scheme/signature/BLSSignatureScheme';
 
 const router = express.Router();
 const resolver = new SchemeResolver();
@@ -17,6 +17,7 @@ resolver.register(new ModSchnorrIdentificationScheme());
 
 // Signature schemes.
 resolver.register(new SchnorrSignatureScheme());
+resolver.register(new BLSSignatureScheme());
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];

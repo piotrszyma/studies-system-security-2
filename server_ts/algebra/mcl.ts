@@ -18,4 +18,7 @@ export default {
   getG2: () => new mclInstance.G2(),
   getMul: () => mclInstance.mul,
   getAdd: () => mclInstance.add,
+  getHashMapG1: () => mclInstance.hashAndMapToG1,
+  getHashMapG2: () => mclInstance.hashAndMapToG2,
+  getPairing: () => mclInstance.pairing,
 }

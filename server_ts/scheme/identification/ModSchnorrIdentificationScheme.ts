@@ -1,32 +1,39 @@
 import IdentificationScheme from "./IdentificationScheme";
-import { SchemeName, SchemeMethod, SchemeMethodName } from "../Scheme";
+
 import Fr from "../../algebra/Fr";
 import G1 from "../../algebra/G1";
-import { createSession, getSessionByToken } from "../../storage/storage";
+import G2 from "../../algebra/G2";
+
+import { SchemeName } from "../Scheme";
+import { getSessionByToken } from "../../storage/storage";
 
 
-export default class SchnorrIdentificationScheme extends IdentificationScheme {
+export default class ModSchnorrIdentificationScheme extends IdentificationScheme {
 
   getName(): SchemeName {
-    return 'sis';
+    return 'msis';
   }
 
   async verify(params: Object): Promise<Object> {
     const sessionToken = params['session_token'];
     const sessionParams = await getSessionByToken(sessionToken);
 
-    const s = new Fr(params['payload']['s']);
     const c = new Fr(sessionParams['c']);
     const X = new G1(sessionParams['X']);
     const A = new G1(sessionParams['A']);
     const g = new G1().getG1();
 
-    const gs = g.mul(s);
+    const s = new G2(params['payload']['s']);
+
+    const gHat = new G2().hashAndMapTo(X.serialize() + c.serialize());
     const Ac = A.mul(c);
     const XAc = X.add(Ac);
 
+    const e1 = g.pairing(s);
+    const e2 = XAc.pairing(gHat);
+
     return {
-      verified: XAc.mcl().getStr(10) == gs.mcl().getStr(10),
+      verified: e1.getStr() === e2.getStr(),
     };
   }
 

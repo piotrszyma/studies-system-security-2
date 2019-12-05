@@ -1,13 +1,17 @@
 import express from 'express';
 import SchemeResolver from '../scheme/SchemeResolver';
 import SchnorrIdentificationScheme from '../scheme/identification/SchnorrIdentificationScheme';
+import OkamotoIdentificationScheme from '../scheme/identification/OkamotoIdentificationScheme';
 import { asyncMiddleware } from './utils';
 import * as process from 'process';
 import { SchemeName } from '../scheme/Scheme';
+import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrIdentificationScheme';
 
 const router = express.Router();
 const resolver = new SchemeResolver();
 resolver.register(new SchnorrIdentificationScheme());
+resolver.register(new OkamotoIdentificationScheme());
+resolver.register(new ModSchnorrIdentificationScheme());
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];

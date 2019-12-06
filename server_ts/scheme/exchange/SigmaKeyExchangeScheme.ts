@@ -4,7 +4,7 @@ import { SchemeMethodName } from "../Scheme";
 import G1 from "../../algebra/G1";
 import Fr from "../../algebra/Fr";
 import { hashOf, stringifiedIntHashOf } from "../../crypto/hash";
-import { poly1305mac } from "../../crypto/mac";
+import { macPoly1305 } from "../../crypto/mac";
 import { serializedSigmaPrivKey, serializedSigmaPubKey } from "../../keys/sigma";
 import { createSession, getSessionByToken } from '../../storage/storage';
 import SchnorrSignatureScheme from '../signature/SchnorrSignatureScheme';
@@ -53,7 +53,7 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
 
     const key = X.mul(y);
     const macKey = hashOf(`mac_${key.serialize()}`);
-    const mac = poly1305mac(serializedSigmaPubKey, macKey);
+    const mac = macPoly1305(serializedSigmaPubKey, macKey);
 
     const msgToSign = X.serialize() + Y.serialize();
     const signature = sign(msgToSign, serializedSigmaPrivKey);

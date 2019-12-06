@@ -8,6 +8,7 @@ import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrI
 import SchnorrSignatureScheme from '../scheme/signature/SchnorrSignatureScheme';
 import BLSSignatureScheme from '../scheme/signature/BLSSignatureScheme';
 import GochJareckiSignatureScheme from '../scheme/signature/GochJareckiSignatureScheme';
+import NaxosKeyExchangeScheme from '../scheme/exchange/NaxosKeyExchangeScheme';
 
 const router = express.Router();
 const resolver = new SchemeResolver();
@@ -20,6 +21,9 @@ resolver.register(new ModSchnorrIdentificationScheme());
 resolver.register(new SchnorrSignatureScheme());
 resolver.register(new BLSSignatureScheme());
 resolver.register(new GochJareckiSignatureScheme());
+
+// Key exchange.
+resolver.register(new NaxosKeyExchangeScheme());
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];

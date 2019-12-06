@@ -1,7 +1,6 @@
 const mcl = require('mcl-wasm');
 let mclInstance = null;
 
-
 new Promise(async (resolve) => {
   await mcl.init(mcl.BLS12_381);
   new mcl.Fr().setByCSPRNG();

@@ -62,24 +62,28 @@ async function handleEncryptedRequest(encryptionName: EncryptionName, schemeName
 
 router.post('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
   const { schemeName, schemeMethod } = request.params;
-  console.log(request.body);
   const responseBody = await handleRequest(schemeName, schemeMethod, request.body);
-  console.log(responseBody);
   response.send(responseBody);
 }));
 
 
 router.get('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
   const { schemeName, schemeMethod } = request.params;
-  console.log(request.body);
   const responseBody = await handleRequest(schemeName, schemeMethod);
-  console.log(responseBody);
   response.send(responseBody);
 }));
 
-router.post('/protocols', (request, response) => {
-  response.send(schemeResolver.getRegistedSchemeNames());
+router.get('/protocols', (request, response) => {
+  response.send({ 'schemas': schemeResolver.getRegistedSchemeNames() });
 });
+
+router.get('/:encryptionName/protocols', (request, response) => {
+  const { encryptionName } = request.params;
+  const encryption = encryptionResolver.getEncryption(encryptionName);
+  const encryptedResponse = encryption.encrypt({ 'schemas': schemeResolver.getRegistedSchemeNames() })
+  response.send(encryptedResponse);
+});
+
 
 router.all('/:encryptionName/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
   const { encryptionName, schemeName, schemeMethod } = request.params;

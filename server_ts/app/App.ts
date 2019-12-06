@@ -39,7 +39,7 @@ export default class App {
     expressApp.use(cookieParser());
     expressApp.use(morgan('combined'));
     expressApp.use(function (error, req, res, next) {
-      console.log(error);
+      // console.log(error);
       res.status(404).json({ message: error.message });
     });
     expressApp.use(router);

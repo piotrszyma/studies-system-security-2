@@ -64,8 +64,6 @@ async function performValidExchange() {
     protocol_name: 'naxos'
   })
 
-  // console.log(response);
-
   const Y = new mcl.G1(); Y.setStr(`1 ${response.Y}`);
   const serverHash = response.msg;
 
@@ -75,7 +73,6 @@ async function performValidExchange() {
     mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2)
   );
 
-  // console.log('clientKey: ', clientKey);
   const verificationHash = Buffer.from(mclUtils.hash(clientKey + msg)).toString('base64');
 
   if (verificationHash !== serverHash) {

@@ -1,29 +1,38 @@
-import express from 'express';
+import express, { response } from 'express';
 import SchemeResolver from '../scheme/SchemeResolver';
 import SchnorrIdentificationScheme from '../scheme/identification/SchnorrIdentificationScheme';
 import OkamotoIdentificationScheme from '../scheme/identification/OkamotoIdentificationScheme';
 import { asyncMiddleware } from './utils';
-import { SchemeName } from '../scheme/Scheme';
+import { SchemeName, SchemeMethodName } from '../scheme/Scheme';
 import ModSchnorrIdentificationScheme from '../scheme/identification/ModSchnorrIdentificationScheme';
 import SchnorrSignatureScheme from '../scheme/signature/SchnorrSignatureScheme';
 import BLSSignatureScheme from '../scheme/signature/BLSSignatureScheme';
 import GochJareckiSignatureScheme from '../scheme/signature/GochJareckiSignatureScheme';
 import NaxosKeyExchangeScheme from '../scheme/exchange/NaxosKeyExchangeScheme';
+import EncryptionResolver from '../encryptions/EncryptionResolver';
+import ChachaEncryption from '../encryptions/ChachaEncryption';
+import SalsaEncryption from '../encryptions/SalsaEncryption';
+import { EncryptionName } from '../encryptions/Encryption';
 
 const router = express.Router();
-const resolver = new SchemeResolver();
+const schemeResolver = new SchemeResolver();
 // Identification schemes.
-resolver.register(new SchnorrIdentificationScheme());
-resolver.register(new OkamotoIdentificationScheme());
-resolver.register(new ModSchnorrIdentificationScheme());
+schemeResolver.register(new SchnorrIdentificationScheme());
+schemeResolver.register(new OkamotoIdentificationScheme());
+schemeResolver.register(new ModSchnorrIdentificationScheme());
 
 // Signature schemes.
-resolver.register(new SchnorrSignatureScheme());
-resolver.register(new BLSSignatureScheme());
-resolver.register(new GochJareckiSignatureScheme());
+schemeResolver.register(new SchnorrSignatureScheme());
+schemeResolver.register(new BLSSignatureScheme());
+schemeResolver.register(new GochJareckiSignatureScheme());
 
 // Key exchange.
-resolver.register(new NaxosKeyExchangeScheme());
+schemeResolver.register(new NaxosKeyExchangeScheme());
+
+const encryptionResolver = new EncryptionResolver();
+encryptionResolver.register(new ChachaEncryption());
+encryptionResolver.register(new SalsaEncryption());
+
 
 function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeName) {
   const requestSchemeName = requestBody['protocol_name'];
@@ -32,12 +41,29 @@ function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeNa
   }
 }
 
+async function handleRequest(schemeName: SchemeName, schemeMethod: SchemeMethodName, requestBody = undefined): Promise<Object> {
+  const scheme = schemeResolver.getScheme(schemeName);
+  if (requestBody) {
+    console.log(requestBody);
+    assertSchemeNameInBodyMatches(requestBody, scheme.getName());
+  }
+  const responseBody = await scheme.getMethod(schemeMethod)(requestBody);
+  console.log(responseBody);
+  return responseBody
+}
+
+async function handleEncryptedRequest(encryptionName: EncryptionName, schemeName: SchemeName, schemeMethod: SchemeMethodName, requestBody = undefined): Promise<Object> {
+  const encryption = encryptionResolver.getEncryption(encryptionName);
+  const decryptedRequestBody = requestBody ? await encryption.decrypt(requestBody) : undefined;
+  const responseBody = await handleRequest(schemeName, schemeMethod, decryptedRequestBody);
+  const encryptedResponseBody = await encryption.encrypt(responseBody);
+  return encryptedResponseBody;
+}
+
 router.post('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
   const { schemeName, schemeMethod } = request.params;
   console.log(request.body);
-  const scheme = resolver.getScheme(schemeName);
-  assertSchemeNameInBodyMatches(request.body, scheme.getName());
-  const responseBody = await scheme.getMethod(schemeMethod)(request.body);
+  const responseBody = await handleRequest(schemeName, schemeMethod, request.body);
   console.log(responseBody);
   response.send(responseBody);
 }));
@@ -45,15 +71,21 @@ router.post('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (reque
 
 router.get('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
   const { schemeName, schemeMethod } = request.params;
-  const scheme = resolver.getScheme(schemeName);
-  // TODO: Add differentiation between those two.
-  const responseBody = await scheme.getMethod(schemeMethod)(null);
+  console.log(request.body);
+  const responseBody = await handleRequest(schemeName, schemeMethod);
   console.log(responseBody);
   response.send(responseBody);
 }));
 
 router.post('/protocols', (request, response) => {
-  response.send(resolver.getRegistedSchemeNames());
+  response.send(schemeResolver.getRegistedSchemeNames());
 });
+
+router.all('/:encryptionName/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {
+  const { encryptionName, schemeName, schemeMethod } = request.params;
+  const responseBody = await handleEncryptedRequest(encryptionName, schemeName, schemeMethod, request.body);
+  response.send(responseBody);
+}));
+
 
 export default router;

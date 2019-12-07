@@ -17,14 +17,14 @@ router.get('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (reques
   response.send(responseBody);
 }));
 
-router.get('/protocols/', (request, response) => {
-  response.send(handleProtocolsRequest());
-});
+router.get('/protocols/', asyncMiddleware(async (request, response) => {
+  response.send(await handleProtocolsRequest());
+}));
 
-router.get('/:encryptionName/protocols', (request, response) => {
+router.get('/:encryptionName/protocols', asyncMiddleware(async (request, response) => {
   const { encryptionName } = request.params;
-  response.send(handleEncryptedProtocolsRequest(encryptionName));
-});
+  response.send(await handleEncryptedProtocolsRequest(encryptionName));
+}));
 
 
 router.all('/:encryptionName/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (request, response) => {

@@ -17,7 +17,7 @@ export async function handleProtocolsRequest() {
 
 export async function handleEncryptedProtocolsRequest(encryptionName: string) {
   const encryption = encryptionResolver.getEncryption(encryptionName);
-  const encryptedResponse = encryption.encrypt(handleProtocolsRequest());
+  const encryptedResponse = encryption.encrypt(await handleProtocolsRequest());
   return encryptedResponse;
 }
 

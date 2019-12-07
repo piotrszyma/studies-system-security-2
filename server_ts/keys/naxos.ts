@@ -1,4 +1,4 @@
 import * as fs from 'fs';
 
-export const serializedNaxosPrivKey = fs.readFileSync('cert/naxospriv.pem').toString();
-export const serializedNaxosPubKey = fs.readFileSync('cert/naxospub.pem').toString();
+export const NAXOS_PRIVKEY = fs.readFileSync('cert/naxospriv.pem').toString();
+export const NAXOS_PUBKEY = fs.readFileSync('cert/naxospub.pem').toString();

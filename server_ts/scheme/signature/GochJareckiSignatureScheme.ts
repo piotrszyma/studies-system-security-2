@@ -29,7 +29,7 @@ export default class GochJareckiSignatureScheme extends SignatureScheme {
       z.serialize() +
       uPrim.serialize() +
       vPrim.serialize()
-    ))
+    ));
 
     return {
       valid: cPrim.equals(c),

@@ -7,13 +7,6 @@ const config = require('../config');
 const PORT = config.testedPort;
 const ADDRESS = config.testedAddress;
 
-const CONST_G1 = {
-  x: '3685416753713387016781088315183077757961620795782546409894578378688607592378376318836054947676345821548104185464507',
-  y: '1339506544944476473020471379941921221584933875938349620426543736416511423956333506472724655353366534992391756441569',
-}
-
-const CONST_R = config.consts.r;
-
 async function performVerifyRequest(data) {
   try {
     const response = await axios.post(`https://${ADDRESS}:${PORT}/protocols/gjss/verify`, data);
@@ -37,12 +30,12 @@ async function testVerifiesValidMessage() {
 
   // 1.
   // TODO(szyma): Use binary format...
-  const randomR = (BigInt(`0x${randomBytes(128).toString("hex")}`) % BigInt(CONST_R));
-  const r = new mcl.Fr();
-  r.setStr(randomR.toString(16), 16);
+  // const randomR = (BigInt(`0x${randomBytes(128).toString("hex")}`) % BigInt(CONST_R));
+  const r = Array.from({ length: 128 }).map(_ => (~~(Math.random() * 10)) % 2).join('');
+  // r.setStr(randomR.toString(16), 16);
 
   // 2.
-  const h = mcl.hashAndMapToG1(msg + r.getStr());
+  const h = mcl.hashAndMapToG1(msg + r);
   const z = mcl.mul(h, x);
 
   // 3.
@@ -60,6 +53,7 @@ async function testVerifiesValidMessage() {
     u.getStr(10).slice(2) +
     v.getStr(10).slice(2)
   );
+
   const s = mcl.add(k, mcl.mul(c, x));
 
   const verifyData = await performVerifyRequest({
@@ -67,7 +61,7 @@ async function testVerifiesValidMessage() {
       'A': A.getStr(10).slice(2),
       'sigma': {
         'z': z.getStr(10).slice(2), // G1
-        'r': r.getStr(10), // Fr
+        'r': r, // bitstring
         's': s.getStr(10), // Fr
         'c': c.getStr(10), // Fr
       },
@@ -76,7 +70,7 @@ async function testVerifiesValidMessage() {
     'protocol_name': 'gjss',
   });
 
-  if (!verifyData.verified) {
+  if (!verifyData.valid) {
     throw 'testVerifiesValidMessage failed'
   }
 }

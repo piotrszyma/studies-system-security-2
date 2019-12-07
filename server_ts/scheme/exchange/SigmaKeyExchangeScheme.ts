@@ -5,7 +5,7 @@ import G1 from "../../algebra/G1";
 import Fr from "../../algebra/Fr";
 import { hashOf, stringifiedIntHashOf } from "../../crypto/hash";
 import { macPoly1305 } from "../../crypto/mac";
-import { serializedSigmaPrivKey, serializedSigmaPubKey } from "../../keys/sigma";
+import { SIGMA_PRIVKEY, SIGMA_PUBKEY } from "../../keys/sigma";
 import { createSession, getSessionByToken } from '../../storage/storage';
 import SchnorrSignatureScheme from '../signature/SchnorrSignatureScheme';
 
@@ -53,10 +53,10 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
 
     const key = X.mul(y);
     const macKey = hashOf(`mac_${key.serialize()}`);
-    const mac = macPoly1305(serializedSigmaPubKey, macKey);
+    const mac = macPoly1305(SIGMA_PUBKEY, macKey);
 
     const msgToSign = X.serialize() + Y.serialize();
-    const signature = sign(msgToSign, serializedSigmaPrivKey);
+    const signature = sign(msgToSign, SIGMA_PRIVKEY);
 
     const sessionToken = createSession({
       'X': X.serialize(),
@@ -68,7 +68,7 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
       'session_token': sessionToken,
       'payload': {
         'b_mac': mac.serialize(),
-        'B': serializedSigmaPubKey,
+        'B': SIGMA_PUBKEY,
         'Y': Y.serialize(),
         'sig': {
           'X': signature.X,
@@ -100,7 +100,6 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
     const X = new G1(sessionParams['X']);
     const Y = new G1(sessionParams['Y']);
     const y = new Fr(sessionParams['y']);
-
 
     const sessionKey = hashOf(`session_${X.mul(y).serialize()}`);
     const hashOfMsg = hashOf(sessionKey + msg, 'sha3-512');

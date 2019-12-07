@@ -6,7 +6,7 @@ import { SchemeMethodName } from "../Scheme";
 import G1 from "../../algebra/G1";
 import Fr from "../../algebra/Fr";
 
-import { serializedNaxosPubKey, serializedNaxosPrivKey } from "../../keys/naxos";
+import { NAXOS_PUBKEY, NAXOS_PRIVKEY } from "../../keys/naxos";
 import { stringifiedIntHashOf } from "../../crypto/hash";
 import { randomBitString } from "../../crypto/random";
 
@@ -32,7 +32,7 @@ export default class NaxosKeyExchangeScheme extends BaseScheme {
 
   async pkey(params: Object): Promise<Object> {
     return {
-      'B': serializedNaxosPubKey,
+      'B': NAXOS_PUBKEY,
     };
   }
 
@@ -44,7 +44,7 @@ export default class NaxosKeyExchangeScheme extends BaseScheme {
     const msg = params['payload']['msg'];
 
     const eskB = randomBitString(512);
-    const skB = new Fr(serializedNaxosPrivKey);
+    const skB = new Fr(NAXOS_PRIVKEY);
 
     const Y = g.mul(new Fr().fromHash(stringifiedIntHashOf(eskB + skB.serialize())));
 
@@ -57,7 +57,7 @@ export default class NaxosKeyExchangeScheme extends BaseScheme {
       Xskb.serialize() +
       XH.serialize() +
       A.serialize() +
-      serializedNaxosPubKey
+      NAXOS_PUBKEY
     ).digest();
 
     const msgArray = new Uint8Array(Buffer.from(msg));

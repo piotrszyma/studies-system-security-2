@@ -6,8 +6,7 @@
   "scripts": {
     "serve": "tsc && node dist/index.js",
     "tsc": "date; echo  'RESULTS: '; find . -name '*.ts' -not -path './node_modules/*' | entr tsc",
-    "debug": "nodemon --inspect dist/index.js",
-    "build": "tsc"
+    "debug": "nodemon --inspect dist/index.js"
   },
   "author": "",
   "license": "ISC",

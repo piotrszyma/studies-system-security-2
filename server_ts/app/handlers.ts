@@ -34,8 +34,10 @@ export async function handleRequest(schemeName: SchemeName, schemeMethod: Scheme
 
 export async function handleEncryptedRequest(encryptionName: EncryptionName, schemeName: SchemeName, schemeMethod: SchemeMethodName, requestBody = undefined): Promise<Object> {
   const encryption = encryptionResolver.getEncryption(encryptionName);
-  const decryptedRequestBody = requestBody ? await encryption.decrypt(requestBody) : undefined;
+  console.log(requestBody);
+  const decryptedRequestBody = (requestBody && requestBody['ciphertext']) ? await encryption.decrypt(requestBody) : undefined;
   const responseBody = await handleRequest(schemeName, schemeMethod, decryptedRequestBody);
   const encryptedResponseBody = await encryption.encrypt(responseBody);
+  console.log(encryptedResponseBody)
   return encryptedResponseBody;
 }

@@ -4,6 +4,8 @@ import AppConfig from './app/AppConfig';
 import AppServer from './app/AppServer';
 import App from './app/App';
 
+require('source-map-support').install();
+
 const config = <AppConfig>{
   ports: {
     httpPort: 8080,

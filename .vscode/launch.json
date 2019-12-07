@@ -9,5 +9,16 @@
       "restart": true,
       "protocol": "inspector",
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/server_ts",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/server_ts/index.ts",
+      "preLaunchTask": "tsc build",
+      "outFiles": [
+        "${workspaceFolder}/server_ts/dist/**/*.js"
+      ]
+    }
   ]
 }

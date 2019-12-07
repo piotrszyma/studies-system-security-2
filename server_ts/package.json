@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "tsc && node dist/index.js",
     "tsc": "date; echo  'RESULTS: '; find . -name '*.ts' -not -path './node_modules/*' | entr tsc",
-    "debug": "nodemon --inspect dist/index.js"
+    "debug": "nodemon --inspect dist/index.js",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
   "dependencies": {
     "@types/express": "^4.17.2",
     "axios": "^0.19.0",
-    "chacha": "^2.1.0"
+    "chacha": "^2.1.0",
+    "source-map-support": "^0.5.16"
   }
 }

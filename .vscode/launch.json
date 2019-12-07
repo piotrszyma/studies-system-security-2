@@ -12,12 +12,12 @@
     {
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server_ts",
+      "cwd": "${workspaceFolder}/server",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/server_ts/index.ts",
+      "program": "${workspaceFolder}/server/index.ts",
       "preLaunchTask": "tsc build",
       "outFiles": [
-        "${workspaceFolder}/server_ts/dist/**/*.js"
+        "${workspaceFolder}/server/dist/**/*.js"
       ]
     }
   ]

@@ -10,7 +10,9 @@ function assertSchemeNameInBodyMatches(requestBody: Object, schemeName: SchemeNa
 }
 
 export async function handleProtocolsRequest() {
-  return { 'schemas': schemeResolver.getRegistedSchemeNames() };
+  const responseData = { 'schemas': schemeResolver.getRegistedSchemeNames() };
+  console.log(responseData);
+  return responseData;
 }
 
 export async function handleEncryptedProtocolsRequest(encryptionName: string) {

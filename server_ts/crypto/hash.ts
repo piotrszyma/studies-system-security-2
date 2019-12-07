@@ -20,3 +20,4 @@ export function hashOf(value: string, mode = 'sha3-256') {
   hasher.update(value);
   return hasher.digest();
 }
+

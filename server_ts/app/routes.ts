@@ -17,7 +17,7 @@ router.get('/protocols/:schemeName/:schemeMethod', asyncMiddleware(async (reques
   response.send(responseBody);
 }));
 
-router.get('/protocols', (request, response) => {
+router.get('/protocols/', (request, response) => {
   response.send(handleProtocolsRequest());
 });
 

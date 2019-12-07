@@ -58,21 +58,20 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
     const msgToSign = X.serialize() + Y.serialize();
     const signature = sign(msgToSign, SIGMA_PRIVKEY);
 
-    const sessionToken = createSession({
+    const sessionToken = await createSession({
       'X': X.serialize(),
-      'Y': Y.serialize(),
       'y': y.serialize(),
     });
 
     return {
       'session_token': sessionToken,
       'payload': {
-        'b_mac': mac.serialize(),
+        'b_mac': mac,
         'B': SIGMA_PUBKEY,
         'Y': Y.serialize(),
         'sig': {
-          'X': signature.X,
-          's': signature.s,
+          'X': signature.X.serialize(),
+          's': signature.s.serialize(),
           'msg': msgToSign,
         }
       }
@@ -86,25 +85,31 @@ export default class SigmaKeyExchangeScheme extends BaseScheme {
     const sessionToken = params['session_token'];
     const signature = params['payload']['sig'];
 
-    const signatureScheme = new SchnorrSignatureScheme();
-    const response = await signatureScheme.verify({
-      X: signature['A'],
-      A: A.serialize(),
-      s: signature['s'],
-      msg: signature['msg'],
+    const response = await new SchnorrSignatureScheme().verify({
+      'payload': {
+        X: signature['X'],
+        A: A.serialize(),
+        s: signature['s'],
+        msg: signature['msg'],
+      }
     })
 
     if (!response['valid']) throw Error("Signature is not valid");
 
     const sessionParams = await getSessionByToken(sessionToken);
     const X = new G1(sessionParams['X']);
-    const Y = new G1(sessionParams['Y']);
     const y = new Fr(sessionParams['y']);
 
     const sessionKey = hashOf(`session_${X.mul(y).serialize()}`);
-    const hashOfMsg = hashOf(sessionKey + msg, 'sha3-512');
+    const msgArray = new Uint8Array(Buffer.from(msg));
+    const sessionMsgArray = new Uint8Array(sessionKey.length + msgArray.length);
+    sessionMsgArray.set(sessionKey);
+    sessionMsgArray.set(msgArray, sessionKey.length);
+
+    const encMsg = crypto.createHash('sha3-512').update(sessionMsgArray).digest('base64');
+
     return {
-      'msg': hashOfMsg.toString('base64')
+      'msg': encMsg
     };
   }
 }

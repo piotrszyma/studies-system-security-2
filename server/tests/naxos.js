@@ -70,7 +70,9 @@ async function performValidExchange() {
   const clientKey = mclUtils.hash(
     mcl.mul(Y, skA).getStr(10).slice(2) +
     mcl.mul(pubB, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2) +
-    mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2)
+    mcl.mul(Y, mclUtils.hashFr(eskA + skA.getStr(10))).getStr(10).slice(2) +
+    response.A +
+    pubKey
   );
 
   const verificationHash = Buffer.from(mclUtils.hash(clientKey + msg)).toString('base64');

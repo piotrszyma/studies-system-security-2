@@ -1,3 +1,3 @@
 import * as fs from 'fs';
 
-export const salsaKey = fs.readFileSync('cert/salsa_key.bin');
+export const SALSA_KEY = fs.readFileSync('cert/salsa_key.bin');

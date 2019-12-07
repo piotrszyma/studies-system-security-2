@@ -1,1 +1,3 @@
-db.sqlite
+*.js
+dist/**/*.js
+dist/**/*.js.map
